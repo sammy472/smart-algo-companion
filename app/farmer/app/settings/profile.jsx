@@ -7,7 +7,6 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const ProfileSettings = () => {
     const [name, setName] = useState("John Doe");
-    const nameRef = useRef(null);
     const [email, setEmail] = useState("johndoe@example.com");
     const [telephone, setTelephone] = useState("+123456789");
     const [address, setAddress] = useState("123 Main Street");
@@ -41,25 +40,6 @@ const ProfileSettings = () => {
 
     const handleEditField = (field) => {
         setEditableFields(prev => ({ ...prev, [field]: true }));
-        switch (field) {
-            case "name":
-                nameRef.current.focus();
-                break;
-            case "email":
-                break;
-            case "telephone":
-                break;
-            case "address":
-                break;
-            case "city":
-                break;
-            case "country":
-                break;
-            case "password":
-                break;
-            default:
-                break;
-        }
     };
 
     const handleShowPassword = () => {  
@@ -94,7 +74,6 @@ const ProfileSettings = () => {
                         placeholder="Full Name"
                         editable={editableFields.name}
                         onBlur={() => setEditableFields(prev => ({ ...prev, name: false }))}
-                        ref={nameRef}
                     />
                     <TouchableOpacity onPress={() => handleEditField('name')} style={{ position: "absolute", right: 10 }}>
                         <MaterialIcons name="edit" size={24} color="#392867" />
