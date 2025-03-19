@@ -46,6 +46,7 @@ const Layout = () => {
                             height: 50,
                             borderTopWidth: 0,
                             shadowColor: "transparent",
+                            padding:10
                         },
                         tabBarActiveTintColor: "white",
                         tabBarInactiveTintColor: "gray",
@@ -83,7 +84,7 @@ const Layout = () => {
                         {
                             title: "",
                             tabBarIcon: () => (
-                                <MaterialCommunityIcons name="home-circle" size={40} color="#F1E2E2" />
+                                <MaterialCommunityIcons name="home-circle" size={30} color="#F1E2E2"/>
                             ),
                             headerTitle:'Smart Algo Companion',
                             headerTitleStyle: {

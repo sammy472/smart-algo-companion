@@ -16,7 +16,7 @@ const Layout = () => {
                 }}
             />
             <Stack.Screen
-                name="[device]"
+                name="[id]"
                 options={{
                     title:'Device Profile',
                 }}

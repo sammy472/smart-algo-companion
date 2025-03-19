@@ -5,16 +5,24 @@ import { useLocalSearchParams,Link } from 'expo-router';
 
 const DeviceProfile = () => {
     const { id } = useLocalSearchParams(); // id will be used in the future to fetch the specific device
-    const device = {
-        id: 1,
-        name: "Water Level Sensor",
-        status: "Active",
-        icon: "tint",
-        farmer: "John Doe",
-        farm: "Green Valley Farm",
-        location: "Accra, Ghana",
-        dateInstalled: "2026-02-10",
-    };
+    const devices = [
+        { id: 1, name: "Soil Moisture Sensor", status: "Active", icon: "tint", farmer: "John Doe", farm: "Green Valley Farm", location: "Accra, Ghana", dateInstalled: "2026-02-10" },
+        { id: 2, name: "pH Sensor", status: "Inactive", icon: "flask", farmer: "Jane Smith", farm: "Sunshine Acres", location: "Kumasi, Ghana", dateInstalled: "2026-03-12" },
+        { id: 3, name: "Soil Temperature Sensor", status: "Active", icon: "thermometer-half", farmer: "Kwame Boateng", farm: "AgroTech Farm", location: "Tamale, Ghana", dateInstalled: "2026-01-08" },
+        { id: 4, name: "NPK Sensor", status: "Inactive", icon: "leaf", farmer: "Aisha Mohammed", farm: "Fertile Grounds", location: "Takoradi, Ghana", dateInstalled: "2026-04-20" },
+        { id: 5, name: "Light Sensor (LDR)", status: "Active", icon: "lightbulb-o", farmer: "Kojo Mensah", farm: "Evergreen Fields", location: "Cape Coast, Ghana", dateInstalled: "2026-05-18" },
+        { id: 6, name: "CO2 Sensor", status: "Active", icon: "cloud", farmer: "Ama Opoku", farm: "Green Pastures", location: "Sunyani, Ghana", dateInstalled: "2026-06-22" },
+        { id: 7, name: "Temperature and Humidity Sensor", status: "Inactive", icon: "thermometer-full", farmer: "Yaw Osei", farm: "Harvest Haven", location: "Ho, Ghana", dateInstalled: "2026-07-10" },
+        { id: 8, name: "Rain Gauge", status: "Active", icon: "cloud-rain", farmer: "Fatima Ali", farm: "Rainforest Farms", location: "Bolgatanga, Ghana", dateInstalled: "2026-08-30" },
+        { id: 9, name: "Water Level Sensor", status: "Inactive", icon: "tint", farmer: "Michael Addo", farm: "HydroFarm", location: "Sekondi, Ghana", dateInstalled: "2026-09-05" },
+        { id: 10, name: "Infrared Camera Sensor", status: "Active", icon: "eye", farmer: "Sarah Adu", farm: "ThermoVision Agro", location: "Dambai, Ghana", dateInstalled: "2026-10-15" },
+        { id: 11, name: "Camera Module", status: "Inactive", icon: "camera", farmer: "Kwesi Owusu", farm: "FarmCam", location: "Koforidua, Ghana", dateInstalled: "2026-11-25" },
+        { id: 12, name: "Motion Detector (PIR Sensor)", status: "Active", icon: "street-view", farmer: "Nana Yaw", farm: "MotionFarm", location: "Wa, Ghana", dateInstalled: "2026-12-30" },
+        { id: 13, name: "Gas Sensors (e.g., Ammonia, Methane)", status: "Active", icon: "fire", farmer: "Akosua Mensah", farm: "GasGuard Farms", location: "Techiman, Ghana", dateInstalled: "2027-01-05" },
+        { id: 14, name: "Barometric Pressure Sensor", status: "Inactive", icon: "dashboard", farmer: "Kwabena Darko", farm: "BaroFarm", location: "Nkawkaw, Ghana", dateInstalled: "2027-02-10" },
+    ];
+
+    const device = devices.find((device) => device.id === parseInt(id));
 
     const handleDelete = () => {
         console.log(`Deleting device ${device.id}`);

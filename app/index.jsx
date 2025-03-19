@@ -3,6 +3,7 @@ import { View,Pressable,Platform,StyleSheet,Text,Appearance } from "react-native
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { StatusBar } from "expo-status-bar";
 
 
 const App = () => { 
@@ -18,6 +19,7 @@ const App = () => {
 
     return (
         <SafeAreaProvider>
+            <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
             <View style={styles.container}>
                 <View style={styles.wrapper}>
                     <View style={styles.buttonContainer}>

@@ -26,7 +26,7 @@ const Layout = () => {
                 }
             >
                 <Stack.Screen 
-                    name="farmer"
+                    name="farmer/app"
                     options={
                         {
                             title: "Farmer",
@@ -34,7 +34,7 @@ const Layout = () => {
                     }
                 />
                 <Stack.Screen 
-                    name="buyer"
+                    name="buyer/app"
                     options={
                         {
                             title: "Buyer",

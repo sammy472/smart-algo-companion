@@ -7,17 +7,25 @@ import {
     TouchableOpacity,
     FlatList
 } from "react-native";
-import { Stack,Link } from "expo-router";
+import { Stack, Link } from "expo-router";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-// List of IoT Devices
+// Updated list of IoT Devices
 const devices = [
-  { id: '1', name: "Water Level Sensor", icon: "tint", status: "Active" },
-  { id: '2', name: "Smart Thermostat", icon: "thermometer-half", status: "Inactive" },
-  { id: '3', name: "Motion Sensor", icon: "eye", status: "Active" },
-  { id: '4', name: "Smart Light", icon: "lightbulb-o", status: "Inactive" },
-  { id: '5', name: "Door Lock", icon: "lock", status: "Active" },
-  { id: '6', name: "Air Quality Sensor", icon: "cloud", status: "Active" },
+  { id: '1', name: "Soil Moisture Sensor", icon: "tint", status: "Active" },
+  { id: '2', name: "pH Sensor", icon: "flask", status: "Inactive" },
+  { id: '3', name: "Soil Temperature Sensor", icon: "thermometer-half", status: "Active" },
+  { id: '4', name: "NPK Sensor", icon: "leaf", status: "Inactive" },
+  { id: '5', name: "Light Sensor (LDR)", icon: "sun-o", status: "Active" },
+  { id: '6', name: "CO2 Sensor", icon: "cloud", status: "Active" },
+  { id: '7', name: "Temperature and Humidity Sensor", icon: "thermometer", status: "Inactive" },
+  { id: '8', name: "Rain Gauge", icon: "umbrella", status: "Active" },
+  { id: '9', name: "Water Level Sensor", icon: "tint", status: "Inactive" },
+  { id: '10', name: "Infrared or Thermal Camera Sensor", icon: "eye", status: "Active" },
+  { id: '11', name: "Camera Module", icon: "camera", status: "Inactive" },
+  { id: '12', name: "Motion Detector (PIR Sensor)", icon: "street-view", status: "Active" },
+  { id: '13', name: "Gas Sensors (e.g., Ammonia, Methane)", icon: "fire", status: "Active" },
+  { id: '14', name: "Barometric Pressure Sensor", icon: "dashboard", status: "Inactive" },
 ];
 
 const DeviceCard = ({ name, icon, status, id }) => {
@@ -25,31 +33,23 @@ const DeviceCard = ({ name, icon, status, id }) => {
 
   return (
     <View style={styles.card}>
-      {/* Top Section */}
       <View style={styles.header}>
         <View style={styles.iconPlaceholder}>
             <Icon name={icon} size={26} color="black" />
         </View>
         <Text style={styles.title}>{name}</Text>
       </View>
-
-      {/* Status Section */}
       <Text style={styles.status}>
         Status: <Text style={isEnabled ? styles.active : styles.inactive}>{isEnabled ? "Active" : "Inactive"}</Text>
       </Text>
-
-      {/* Buttons Section */}
       <View style={styles.controls}>
         <TouchableOpacity style={styles.analyticsButton}>
           <Text style={styles.analyticsText}>Analytics</Text>
         </TouchableOpacity>
-
         <TouchableOpacity>
           <Icon name="trash" size={26} color="black" />
         </TouchableOpacity>
       </View>
-
-      {/* Bottom Section */}
       <View style={styles.footer}>
         <Link href={`farmer/app/iot-device-management/${id}`}>
             <Text style={styles.moreText}>More &gt;&gt;&gt;</Text>
@@ -67,21 +67,13 @@ const HomePage = () => {
     return (
         <View style={styles.container}>
             <Stack.Screen options={{headerShown:false}}/>
-            <View style={{
-                position:'absolute',
-                backgroundColor:'#1D1041',
-                zIndex:50,
-                bottom:0,
-                right:'40%',
-                padding:15,
-                margin:10,
-                borderRadius:10
-            }}>
+            <View style={styles.addButton}>
                 <Link href={'/farmer/app/iot-device-management/add-device'}>
                     <Icon name='plus' size={26} color={'white'}/>
                 </Link>
             </View>
             <FlatList
+                showsVerticalScrollIndicator={false}
                 data={devices}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
@@ -109,13 +101,13 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
         marginBottom: 15,
-      },
-      header: {
+    },
+    header: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 10,
-      },
-      iconPlaceholder: {
+    },
+    iconPlaceholder: {
         width: 40,
         height: 40,
         backgroundColor: '#ccc',
@@ -123,48 +115,57 @@ const styles = StyleSheet.create({
         marginRight: 10,
         alignItems: 'center',
         justifyContent: 'center',
-      },
-      title: {
+    },
+    title: {
         fontSize: 16,
         fontWeight: 'bold',
-      },
-      status: {
+    },
+    status: {
         fontSize: 14,
         marginBottom: 10,
-      },
-      active: {
+    },
+    active: {
         color: 'green',
         fontWeight: 'bold',
-      },
-      inactive: {
+    },
+    inactive: {
         color: 'red',
         fontWeight: 'bold',
-      },
-      controls: {
+    },
+    controls: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginBottom: 10,
-      },
-      analyticsButton: {
+    },
+    analyticsButton: {
         backgroundColor: '#ddd',
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 5,
-      },
-      analyticsText: {
+    },
+    analyticsText: {
         fontWeight: 'bold',
-      },
-      footer: {
+    },
+    footer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-      },
-      moreText: {
+    },
+    moreText: {
         fontSize: 14,
         fontWeight: 'bold',
-      },
+    },
+    addButton: {
+        position:'absolute',
+        backgroundColor:'#1D1041',
+        zIndex:50,
+        bottom:0,
+        right:'40%',
+        padding:15,
+        margin:10,
+        borderRadius:10
+    }
 });
 
 export default HomePage;
-
