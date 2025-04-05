@@ -41,6 +41,7 @@ const HomePage = () => {
 
             {/* Video List */}
             <FlatList
+                showsVerticalScrollIndicator={false}
                 data={filteredVideos}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (

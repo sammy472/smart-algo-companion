@@ -61,8 +61,12 @@ const Layout = () => {
                     options={
                         {
                             title: "Learning Hub",
-                            tabBarIcon: ({color}) => (
-                                <MaterialCommunityIcons name="book-open-variant" size={26} color="#F1E2E2"/>
+                            tabBarIcon: ({focused,color,size}) => (
+                                <MaterialCommunityIcons 
+                                    name={focused ? "book-open-variant" : "book-open-page-variant-outline"}
+                                    size={focused ? size + 2 : size} 
+                                    color={color}
+                                />
                             ),
                         }
                     }
@@ -72,8 +76,12 @@ const Layout = () => {
                     options={
                         {
                             title: "Admin Dashboard",
-                            tabBarIcon: ({color}) => (
-                                <MaterialCommunityIcons name="view-dashboard" size={26} color="#F1E2E2"/>
+                            tabBarIcon: ({focused,color,size}) => (
+                                <MaterialCommunityIcons
+                                    name={focused ? "view-dashboard" : "view-dashboard-outline"} 
+                                    size={focused ? size + 2 : size} 
+                                    color={color}
+                                />
                             ),
                         }
                     }
@@ -83,8 +91,12 @@ const Layout = () => {
                     options={
                         {
                             title: "",
-                            tabBarIcon: () => (
-                                <MaterialCommunityIcons name="home-circle" size={30} color="#F1E2E2"/>
+                            tabBarIcon: ({focused,color,size}) => (
+                                <Ionicons 
+                                    name={focused ? "home" : "home-outline"} 
+                                    size={focused ? size + 2 : size} 
+                                    color={color}
+                                />
                             ),
                             headerTitle:'Smart Algo Companion',
                             headerTitleStyle: {
@@ -106,8 +118,12 @@ const Layout = () => {
                     options={
                         {
                             title: "Device Management",
-                            tabBarIcon: ({color}) => (
-                                <MaterialCommunityIcons name="devices" size={26} color="#F1E2E2"/>
+                            tabBarIcon: ({focused,color,size}) => (
+                                <MaterialCommunityIcons 
+                                    name={focused ? "devices" : "devices"} 
+                                    size={focused ? size + 2 : size} 
+                                    color={color}
+                                />
                             ),
                         }
                     }
@@ -117,7 +133,13 @@ const Layout = () => {
                     options={
                         {
                             title: "Profile & Parameters",
-                            tabBarIcon: ({color}) => (<MaterialIcons name="settings" size={26} color="#F1E2E2"/>),
+                            tabBarIcon: ({focused,color,size}) => (
+                            <Ionicons 
+                                name={focused ? "settings" : "settings-outline"} 
+                                size={focused ? size + 2 : size} 
+                                color={color}
+                            />
+                        ),
                         }
                     }
                 />
