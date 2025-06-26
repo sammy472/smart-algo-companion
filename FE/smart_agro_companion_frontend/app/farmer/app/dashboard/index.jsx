@@ -6,6 +6,7 @@ import {
   BarChart,
   LineChart,
 } from 'react-native-chart-kit';
+import {AnimatedSwipeRightHint} from '../components/animated-swipe-right-indicator.jsx';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -101,8 +102,8 @@ const Dashboard = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Smart Agro Companion</Text>
-      <Text style={styles.subTitle}>Dashboard</Text>
       <Text style={styles.subTitle}>Welcome, SAMUEL!</Text>
+      <AnimatedSwipeRightHint />
 
       {/* Device List */}
       <CardView style={styles.cardDevices}>

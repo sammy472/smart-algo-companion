@@ -13,7 +13,7 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider,SafeAreaView } from 'react-native-safe-area-context';
 
 const allProducts = [
   {
@@ -77,77 +77,79 @@ export default function ProductCatalogue() {
 
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" backgroundColor="#F6F6F6" />
-    <View 
-      style={styles.container}
-    >
-      <Text style={styles.heading}>Product Catalogue</Text>
+      <SafeAreaView style={{ flex: 1}}>
+        <StatusBar style="light"/>
+        <View 
+          style={styles.container}
+        >
+          <Text style={styles.heading}>Product Catalogue</Text>
 
-      {/* Filters */}
-      <View style={styles.filters}>
-        <Text style={styles.label}>Filter by Type</Text>
-        <View style={styles.pickerWrapper}>
-          <Picker
-            selectedValue={selectedType}
-            onValueChange={(value) => setSelectedType(value)}
-            style={styles.picker}
-          >
-            {types.map((type) => (
-              <Picker.Item key={type} label={type} value={type} />
-            ))}
-          </Picker>
-        </View>
+          {/* Filters */}
+          <View style={styles.filters}>
+            <Text style={styles.label}>Filter by Type</Text>
+            <View style={styles.pickerWrapper}>
+              <Picker
+                selectedValue={selectedType}
+                onValueChange={(value) => setSelectedType(value)}
+                style={styles.picker}
+              >
+                {types.map((type) => (
+                  <Picker.Item key={type} label={type} value={type} />
+                ))}
+              </Picker>
+            </View>
 
-        <Text style={styles.label}>Filter by Location</Text>
-        <View style={styles.pickerWrapper}>
-          <Picker
-            selectedValue={selectedLocation}
-            onValueChange={(value) => setSelectedLocation(value)}
-            style={styles.picker}
-          >
-            {locations.map((loc) => (
-              <Picker.Item key={loc} label={loc} value={loc} />
-            ))}
-          </Picker>
-        </View>
+            <Text style={styles.label}>Filter by Location</Text>
+            <View style={styles.pickerWrapper}>
+              <Picker
+                selectedValue={selectedLocation}
+                onValueChange={(value) => setSelectedLocation(value)}
+                style={styles.picker}
+              >
+                {locations.map((loc) => (
+                  <Picker.Item key={loc} label={loc} value={loc} />
+                ))}
+              </Picker>
+            </View>
 
-        <Text style={styles.label}>Max Price ($)</Text>
-        <View style={styles.priceInputContainer}>
-          <Ionicons name="pricetag" size={16} color="#555" />
-          <TextInput
-            placeholder="e.g. 3.50"
-            keyboardType="numeric"
-            style={styles.priceInput}
-            value={maxPrice}
-            onChangeText={setMaxPrice}
+            <Text style={styles.label}>Max Price ($)</Text>
+            <View style={styles.priceInputContainer}>
+              <Ionicons name="pricetag" size={16} color="#555" />
+              <TextInput
+                placeholder="e.g. 3.50"
+                keyboardType="numeric"
+                style={styles.priceInput}
+                value={maxPrice}
+                onChangeText={setMaxPrice}
+              />
+            </View>
+          </View>
+
+          {/* Products */}
+          <FlatList
+            data={filteredProducts}
+            keyExtractor={(item) => item.id}
+            numColumns={2}
+            columnWrapperStyle={{ justifyContent: 'space-between' }}
+            contentContainerStyle={{ paddingBottom: 120 }}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <View style={styles.card}>
+                <Image source={{ uri: item.image }} style={styles.image} />
+                <Text style={styles.productName}>{item.name}</Text>
+                <Text style={styles.price}>${item.price.toFixed(2)} / kg</Text>
+                <Text style={styles.location}>
+                  <Ionicons name="location" size={14} color="#777" /> {item.location}
+                </Text>
+                <TouchableOpacity style={styles.cartBtn}>
+                  <Ionicons name="cart" size={16} color="#fff" />
+                  <Text style={styles.cartText}>Add to Cart</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           />
         </View>
-      </View>
-
-      {/* Products */}
-      <FlatList
-        data={filteredProducts}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        columnWrapperStyle={{ justifyContent: 'space-between' }}
-        contentContainerStyle={{ paddingBottom: 120 }}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Image source={{ uri: item.image }} style={styles.image} />
-            <Text style={styles.productName}>{item.name}</Text>
-            <Text style={styles.price}>${item.price.toFixed(2)} / kg</Text>
-            <Text style={styles.location}>
-              <Ionicons name="location" size={14} color="#777" /> {item.location}
-            </Text>
-            <TouchableOpacity style={styles.cartBtn}>
-              <Ionicons name="cart" size={16} color="#fff" />
-              <Text style={styles.cartText}>Add to Cart</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      />
-    </View>
+      </SafeAreaView>
     </SafeAreaProvider>
   );
 }

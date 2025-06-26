@@ -24,7 +24,7 @@ const SettingsLayout = () => {
                         color: 'white',
                     },
                     drawerItemStyle: {
-                        borderRadius: 5,
+                        borderRadius: 1,
                         marginVertical: 2,
                         marginHorizontal: 5,
                         padding: 5,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
   View,
   Text,
@@ -16,12 +16,28 @@ import * as ImagePicker from 'expo-image-picker';
 
 
 const AddProduct = () => {
+  //State variables to hold product details
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState('');
   const [category, setCategory] = useState('');
   const [price, setPrice] = useState('');
   const [image, setImage] = useState('');
   const [products, setProducts] = useState([]);
+
+  //Camera and Image Picker permissions hooks
+  /*
+  const [status, requestPermission,getPermission] = ImagePicker.useCameraPermissions({
+    request:false,
+    get: false,
+  });
+  const [galleryStatus, requestGalleryPermission,getGalleryPermission] = ImagePicker.useMediaLibraryPermissions({
+    request:false,
+    get: false,
+  });
+
+  console.log('Camera Permission Status:', status);
+  console.log('Gallery Permission Status:', galleryStatus);
+  */
 
   const categories = ['Vegetables', 'Grains', 'Cereals', 'Fruits', 'Poultry', 'Meat'];
 
@@ -33,17 +49,62 @@ const AddProduct = () => {
     setImage('');
   };
 
+  //Picking an image from the gallery
   const pickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permissionResult.granted === false) {
+      Alert.alert('Permission to access media is required!');
+      return;
+    }else{
       let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ['images'],
-          allowsEditing: true,
-          aspect: [1, 1],
-          quality: 1,
+        mediaTypes: ['images','livePhotos'],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
       });
-
       if (!result.canceled) {
-          setImage(result.assets[0].uri);
+        setImage(result.assets[0].uri);
       }
+    }
+  };
+
+  //Taking a photo using the camera
+  //This function will request permission to use the camera and then launch the camera interface
+  const takePhoto = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+        if (permissionResult.granted === false) {
+      Alert.alert('Permission to access camera roll is required!');
+      return;
+    }else{
+      let result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ['images','livePhotos'],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+      if (!result.canceled) {
+        setImage(result.assets[0].uri);
+      }
+    }
+  }
+
+  const pickAvatar = async () => {
+    Alert.alert(
+      'Choose Avatar',
+      'Select image source',
+      [
+        {
+          text: 'Camera',
+          onPress: takePhoto,
+        },
+        {
+          text: 'Gallery',
+          onPress: pickImage,
+        },
+        { text: 'Cancel', style: 'cancel' },
+      ],
+      { cancelable: true }
+    );
   };
 
   const handleAddProduct = () => {
@@ -82,13 +143,17 @@ const AddProduct = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-      <Text style={styles.title}>Add New Product</Text>
+      <Text style={styles.title}>
+        Add New Product
+      </Text>
       {renderInputWithIcon('food-apple', 'Product Name', name, setName)}
       {renderInputWithIcon('weight-kilogram', 'Quantity (kg)', quantity, setQuantity, 'numeric')}
       {renderInputWithIcon('currency-usd', 'Price per kilo ($)', price, setPrice, 'numeric')}
 
-      <Text style={[styles.label, { marginBottom: 6 }]}>Category</Text>
-      <View style={[styles.pickerWrapper, { flexDirection: 'row', alignItems: 'center' }]}>
+      <Text style={[styles.label, { marginBottom: 6 }]}>
+        Category
+      </Text>
+      <View style={[styles.pickerWrapper]}>
         <Icon name="format-list-bulleted" size={22} color="#1D1041" style={{ marginRight: 8 }} />
         <Picker
           selectedValue={category}
@@ -102,12 +167,12 @@ const AddProduct = () => {
         </Picker>
       </View>
 
-      <View>
-        <TouchableOpacity style={styles.button} onPress={pickImage}>
-          <Icon name="image" size={24} color="white" style={{ marginRight: 8 }} />
-          <Text style={styles.buttonText}>Pick Image</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity style={styles.buttonCamera} onPress={pickAvatar}>
+        <Icon name="image" size={24} color="white" style={{ marginRight: 8 }} />
+        <Text style={styles.buttonText}>
+          Tap to choose or take a photo
+        </Text>
+      </TouchableOpacity>
 
       {image ? (
         <Image
@@ -184,12 +249,13 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   pickerWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#CCC',
-    borderRadius: 8,
-    marginBottom: 16,
-    backgroundColor: '#FFF',
-    paddingLeft: 10,
+    borderColor: '#ccc',
+    borderRadius: 12,
+    paddingHorizontal: 15,
+    marginBottom: 15,
   },
   pickerAndroid: {
     height: 50,
@@ -201,7 +267,7 @@ const styles = StyleSheet.create({
   },
   imagePreview: {
     width: '100%',
-    height: 200,
+    height: 250,
     borderRadius: 8,
     marginBottom: 20,
     borderColor: '#CCC',
@@ -220,6 +286,16 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  buttonCamera: {
+    flexDirection: 'row',
+    backgroundColor: 'green',
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+    height:120
   },
   productCard: {
     flexDirection: 'row',

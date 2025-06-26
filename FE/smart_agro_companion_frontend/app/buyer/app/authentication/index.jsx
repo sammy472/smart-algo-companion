@@ -1,106 +1,135 @@
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import React,{
+    useState,
+} from "react";
+import { 
+    View, 
+    Text, 
+    TouchableOpacity, 
+    StyleSheet,
+} from "react-native";
+import { useRouter, Stack } from "expo-router";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
 
-export default function Home() {
-  return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.welcomeText}>Welcome Back 👋</Text>
-      <Text style={styles.subText}>Find fresh farm produce near you</Text>
+const AuthenticationPage = () => {
+    const router = useRouter();
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Featured Products</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {[1, 2, 3].map((item) => (
-            <TouchableOpacity key={item} style={styles.card}>
-              <Image
-                source={{ uri: 'https://source.unsplash.com/400x400/?fruit' + item }}
-                style={styles.image}
-              />
-              <Text style={styles.productName}>Organic Tomatoes</Text>
-              <Text style={styles.price}>$3.50 / kg</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
+    return (
+        <>
+            <StatusBar style="light"/>
+            <View style={
+                { 
+                    flex: 1, 
+                    backgroundColor: "#f5f5f5", 
+                    padding: 10,
+                    justifyContent: "center",
+                    alignItems: "center",
+                }
+            }>
+                <Stack.Screen options={{ headerShown: false }} />
+                <View style={styles.container}>
+                    <MaterialCommunityIcons
+                        name="account-key"
+                        size={50}
+                        color="#392867"
+                        style={{ marginBottom: 20 }}    
+                    />
+                    <Text style={styles.title}>Welcome to Authentication</Text>
+                    <Text style={styles.subtitle}>
+                        Please choose an option below to continue.
+                    </Text>
+                </View>
+                <View style={styles.subContainer}>                
+                    <TouchableOpacity 
+                        style={styles.button} 
+                        onPress={
+                            () => router.push("/buyer/app/authentication/login")
+                        }
+                    >
+                        <Text style={styles.buttonText}>Login</Text>
+                    </TouchableOpacity>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Nearby Farms</Text>
-        <View style={styles.farmCard}>
-          <Text style={styles.farmName}>Green Valley Farm</Text>
-          <Text style={styles.farmDetails}>Accra, Ghana</Text>
-        </View>
-        <View style={styles.farmCard}>
-          <Text style={styles.farmName}>Sunrise Harvest</Text>
-          <Text style={styles.farmDetails}>Kumasi, Ghana</Text>
-        </View>
-      </View>
-    </ScrollView>
-  );
-}
+                    <TouchableOpacity 
+                        style={[styles.button, styles.signupButton]} 
+                        onPress={
+                            () => router.push("/buyer/app/authentication/signup")
+                        }
+                    >
+                        <Text style={styles.buttonText}>Sign Up</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.subtitle}>
+                        Forgotten your password?{" "}
+                        <Text 
+                            style={{ color: "#6C5CE7", fontWeight: "bold" }} 
+                            onPress={
+                                () => router.push("/buyer/app/authentication/reset-password")
+                            }
+                        >
+                            Reset it here   
+                            </Text>
+                    </Text>
+                </View>
+            </View>
+        </>
+    );
+};
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F6F6F6',
-    padding: 16,
-    flex: 1,
-  },
-  welcomeText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#392867',
-    marginBottom: 4,
-  },
-  subText: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 16,
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 10,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginRight: 12,
-    padding: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    width: 140,
-  },
-  image: {
-    height: 100,
-    borderRadius: 10,
-    marginBottom: 8,
-    width: '100%',
-  },
-  productName: {
-    fontWeight: '500',
-    fontSize: 14,
-  },
-  price: {
-    fontSize: 13,
-    color: '#392867',
-    marginTop: 4,
-  },
-  farmCard: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 10,
-  },
-  farmName: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  farmDetails: {
-    fontSize: 13,
-    color: '#666',
-    marginTop: 2,
-  },
+    container: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#f5f5f5",
+        paddingHorizontal: 5,
+    },
+    subContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#f5f5f5",
+        paddingHorizontal: 5,
+        borderColor: "#392867",
+        borderWidth: 1,
+        width: "95%",
+        borderRadius: 4,
+    },
+    title: {
+        fontSize:24, 
+        marginVertical:10,
+        padding:10,
+        textAlign:'center',
+        fontWeight:'bold',
+        color:'#1D1041',
+        backgroundColor:'#EDEDED',
+        borderRadius:10,
+    },
+    button: {
+        width: "80%",
+        paddingVertical: 15,
+        borderRadius: 4,
+        backgroundColor: "#392867",
+        alignItems: "center",
+        marginBottom: 15,
+        elevation: 5, // Shadow effect (Android)
+        shadowColor: "#000", // Shadow effect (iOS)
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+    },
+    signupButton: {
+        backgroundColor: "#6C5CE7",
+    },
+    buttonText: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "#fff",
+    },
+    subtitle: {
+        fontSize: 14,
+        color: "#555",
+        marginTop: 10,
+        textAlign: "center",
+    },
 });
+
+export default AuthenticationPage;

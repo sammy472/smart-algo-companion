@@ -1,39 +1,50 @@
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  ScrollView, 
+  Image, 
+  TouchableOpacity 
+} from 'react-native';
 
 export default function Home() {
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.welcomeText}>Welcome Back 👋</Text>
-      <Text style={styles.subText}>Find fresh farm produce near you</Text>
+    <>
+      <StatusBar style="light"/>
+      <ScrollView style={styles.container}>
+        <Text style={styles.welcomeText}>Welcome Back 👋</Text>
+        <Text style={styles.subText}>Find fresh farm produce near you</Text>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Featured Products</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {[1, 2, 3].map((item) => (
-            <TouchableOpacity key={item} style={styles.card}>
-              <Image
-                source={{ uri: 'https://source.unsplash.com/400x400/?fruit' + item }}
-                style={styles.image}
-              />
-              <Text style={styles.productName}>Organic Tomatoes</Text>
-              <Text style={styles.price}>$3.50 / kg</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Featured Products</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {[1, 2, 3].map((item) => (
+              <TouchableOpacity key={item} style={styles.card}>
+                <Image
+                  source={{ uri: 'https://source.unsplash.com/400x400/?fruit' + item }}
+                  style={styles.image}
+                />
+                <Text style={styles.productName}>Organic Tomatoes</Text>
+                <Text style={styles.price}>$3.50 / kg</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Nearby Farms</Text>
-        <View style={styles.farmCard}>
-          <Text style={styles.farmName}>Green Valley Farm</Text>
-          <Text style={styles.farmDetails}>Accra, Ghana</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Nearby Farms</Text>
+          <View style={styles.farmCard}>
+            <Text style={styles.farmName}>Green Valley Farm</Text>
+            <Text style={styles.farmDetails}>Accra, Ghana</Text>
+          </View>
+          <View style={styles.farmCard}>
+            <Text style={styles.farmName}>Sunrise Harvest</Text>
+            <Text style={styles.farmDetails}>Kumasi, Ghana</Text>
+          </View>
         </View>
-        <View style={styles.farmCard}>
-          <Text style={styles.farmName}>Sunrise Harvest</Text>
-          <Text style={styles.farmDetails}>Kumasi, Ghana</Text>
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </>
   );
 }
 

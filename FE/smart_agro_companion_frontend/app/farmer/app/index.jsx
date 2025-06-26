@@ -139,7 +139,6 @@ const HomePage = () => {
     <GlobalContext.Provider value={{ isLoggedIn}}>
         <SafeAreaProvider style={styles.container}>
             <StatusBar style="light" />
-
             {isLoggedIn ? (
                 <ScrollView contentContainerStyle={styles.content}>
                     
@@ -147,6 +146,14 @@ const HomePage = () => {
                     <View style={styles.welcomeBox}>
                         <Text style={styles.welcomeText}>Welcome back, SAMUEL!</Text>
                         <MaterialIcons name="person" size={30} color="white" />
+                    </View>
+                    <View style={styles.switchWrapper}>
+                        <Text style={styles.switchText}>
+                            Switch to a Buyer?
+                        </Text>
+                        <Link href="/buyer/app" style={styles.link}>
+                            <MaterialIcons name="sell" size={30} color="white" /> 
+                        </Link>
                     </View>
 
                     {/* Analytics Section */}
@@ -374,6 +381,40 @@ const styles = StyleSheet.create({
         fontSize: 16, 
         fontWeight: 'bold' 
     },
+    switchText:{ 
+        fontSize: 18, 
+        color: '#666', 
+        fontWeight: 'bold', 
+        marginRight: 8,
+        fontStyle: 'italic',
+        fontFamily: 'Poppins_600SemiBold'
+    },
+    switchWrapper:{ 
+        flex: 1, 
+        backgroundColor: '#392867',
+        flexDirection: 'column', 
+        justifyContent: 'center', 
+        marginBottom: 16,
+        alignItems: 'center',
+        padding: 10,
+        borderRadius: 5,
+        width: '100%',
+    },
+    link:{
+        flex: 1,
+        backgroundColor: 'green',
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 4,
+        marginTop: 16,
+        color: '#fff',
+        width: '80%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center',
+        fontSize: 16,
+        fontWeight: 'bold',
+  },
 });
 
 export default HomePage;

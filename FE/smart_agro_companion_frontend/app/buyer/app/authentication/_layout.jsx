@@ -1,23 +1,13 @@
 import { Stack } from "expo-router";
 
-const Layout = () => {  
+const AuthLayout = () => {  
     return (
         <Stack
-            screenOptions={{
-                headerStyle: {
-                    backgroundColor: "#1D1041",
-                },
-                headerTintColor: "#fff",
-                headerTitleStyle: {
-                    fontWeight: "bold",
-                },
-                headerShown: false,
-            }
-            
-        }
-            
-        />
+            initialRouteName="index"
+            screenOptions={{ headerShown: true, headerTitleAlign: "center" }}
+        >
+        </Stack>
     );
 }
 
-export default Layout;
+export default AuthLayout;

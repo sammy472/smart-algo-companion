@@ -1,4 +1,8 @@
-import React,{useState,useReducer,useEffect} from 'react';
+import React,{
+  useState,
+  useReducer,
+  useEffect
+} from 'react';
 import {
   View,
   Text,
@@ -6,14 +10,13 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
-  Alert,
-  Modal,
-  Animated
+  ActivityIndicator
 } from 'react-native';
 
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { SafeAreaProvider,SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons, MaterialCommunityIcons,MaterialIcons } from '@expo/vector-icons';
+import { Link } from 'expo-router';
 
 import placeHolderImage from './assets/cover.webp'; // Placeholder image for farms
 
@@ -68,9 +71,13 @@ const nearbyFarms = [
 ];
 
 export default function Home() {
+  const [loading, setLoading] = useState(true);
+  const [userStatus, setUserStatus] = useState('buyer');
   return (
+    loading ? (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
+      <SafeAreaView style={{ flex: 1}}>
+      <StatusBar style="light" />
       <ScrollView 
         style={styles.container}
         showsVerticalScrollIndicator={false}
@@ -78,6 +85,14 @@ export default function Home() {
         <Text style={styles.welcomeText}>
           <Ionicons name="leaf-outline" size={26} color="#392867" /> Welcome Back 👋
         </Text>
+        <View style={styles.switchWrapper}>
+          <Text style={styles.switchText}>
+            Switch to a Farmer?
+          </Text>
+          <Link href="/farmer/app" style={styles.link}>
+              <MaterialIcons name="agriculture" size={30} color="white" /> 
+          </Link>
+        </View>
         <Text style={styles.subText}>Find fresh farm produce near you</Text>
 
         {/* Products Section */}
@@ -141,7 +156,16 @@ export default function Home() {
           ))}
         </View>
       </ScrollView>
+      </SafeAreaView>
     </SafeAreaProvider>
+  ) : (
+    <SafeAreaProvider style={styles.container}>
+      <StatusBar style="light" />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#392867" />
+        <Text style={{ marginTop: 16, fontSize: 16, color: '#392867' }}>Loading...</Text>
+      </View>
+    </SafeAreaProvider>)
   );
 }
 
@@ -156,11 +180,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#392867',
     marginBottom: 4,
+    textAlign: 'center',
   },
   subText: {
     fontSize: 14,
     color: '#666',
     marginBottom: 16,
+    fontWeight:'bold'
   },
   section: {
     marginBottom: 24,
@@ -175,6 +201,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#392867',
+    fontFamily: 'Inter_600SemiBold',
   },
   card: {
     backgroundColor: '#fff',
@@ -194,14 +221,16 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   productName: {
-    fontWeight: '500',
+    fontWeight: 'bold',
     fontSize: 14,
     marginBottom: 2,
+
   },
   price: {
     fontSize: 13,
     color: '#392867',
     marginBottom: 8,
+    fontWeight: 'bold',
   },
   cartButton: {
     backgroundColor: '#392867',
@@ -235,6 +264,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#888',
     marginTop: 4,
+    fontWeight: 'bold',
   },
   noOrdersText: {
     fontSize: 14,
@@ -256,14 +286,48 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#392867',
     marginBottom: 4,
+    fontWeight: 'bold',
   },
   farmDetails: {
     fontSize: 13,
     color: '#666',
+    fontWeight: 'bold',
   },
   farmerName: {
     fontSize: 13,
     color: '#392867',
     marginTop: 2,
+    fontWeight: 'bold',
   },
+  link:{
+    flex: 1,
+    backgroundColor: 'green',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 4,
+    marginTop: 16,
+    color: '#fff',
+    width: '80%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  switchText:{ 
+    fontSize: 18, 
+    color: '#666', 
+    fontWeight: 'bold', 
+    marginRight: 8 
+  },
+  switchWrapper:{ 
+    flex: 1, 
+    backgroundColor: '#392867',
+    flexDirection: 'column', 
+    justifyContent: 'center', 
+    marginBottom: 16,
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 5,
+  }
 });

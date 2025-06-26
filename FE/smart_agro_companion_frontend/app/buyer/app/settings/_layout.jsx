@@ -11,7 +11,7 @@ const Layout = () => {
                 headerTitleStyle: {
                     fontWeight: "bold",
                 },
-                headerShown: false,
+                headerShown: true,
             }
             
         }

@@ -1,7 +1,8 @@
 import React from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider,SafeAreaView } from "react-native-safe-area-context";
+
 
 const Layout = () => {
     return (
