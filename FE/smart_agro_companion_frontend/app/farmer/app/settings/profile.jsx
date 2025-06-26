@@ -14,6 +14,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
+import { AnimatedSwipeRightHint } from "../components/animated-swipe-right-indicator";
 
 const ProfileSettings = () => {
     const [profile, setProfile] = useState({
@@ -60,6 +61,7 @@ const ProfileSettings = () => {
     return (
         <ScrollView showsVerticalScrollIndicator={false}>
             <View style={styles.container}>
+                <AnimatedSwipeRightHint />
                 <Text style={styles.title}>Profile Settings</Text>
 
                 {/* Profile Avatar */}
