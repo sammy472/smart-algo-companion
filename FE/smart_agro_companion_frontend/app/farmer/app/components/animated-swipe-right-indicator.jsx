@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
-    backgroundColor:' wheat',
+    backgroundColor:'wheat',
     padding: 16,
     borderWidth: 1,
     borderColor: '#ccc',
