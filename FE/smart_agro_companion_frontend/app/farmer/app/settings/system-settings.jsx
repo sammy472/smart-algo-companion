@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Switch, TouchableOpacity, StyleSheet, Modal, Pressable } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { AnimatedSwipeRightHint } from '../components/animated-swipe-right-indicator';
 
 // Translations configuration
 const translations = {
@@ -241,6 +242,7 @@ const SystemSettings = () => {
 
   return (
     <ScrollView style={styles.container}>
+      <AnimatedSwipeRightHint />
       <Text style={styles.headerTitle}>{t.title}</Text>
 
       <LanguageModal />

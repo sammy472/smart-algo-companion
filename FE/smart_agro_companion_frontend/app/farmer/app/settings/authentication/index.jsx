@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { useRouter, Stack } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { AnimatedSwipeRightHint } from "../../components/animated-swipe-right-indicator";
 
 const AuthenticationPage = () => {
     const router = useRouter();
@@ -24,6 +25,7 @@ const AuthenticationPage = () => {
         }>
             <Stack.Screen options={{ headerShown: false }} />
             <View style={styles.container}>
+                <AnimatedSwipeRightHint />
                 <MaterialCommunityIcons
                     name="account-key"
                     size={50}
