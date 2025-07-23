@@ -2,11 +2,12 @@ import React from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "react-native";
 import { SafeAreaProvider,SafeAreaView } from "react-native-safe-area-context";
+import { AppProvider } from "./context/app-context";
 
 
 const Layout = () => {
     return (
-        <SafeAreaProvider>
+        <AppProvider>
             <StatusBar barStyle="dark-content" />
             <Stack
                 screenOptions={
@@ -25,7 +26,16 @@ const Layout = () => {
                         },
                     }
                 }
+                initialRouteName="index"
             >
+                <Stack.Screen 
+                    name="index"
+                    options={
+                        {
+                            title: "Farmer",
+                        }
+                    }
+                />
                 <Stack.Screen 
                     name="farmer/app"
                     options={
@@ -63,7 +73,7 @@ const Layout = () => {
                     }
                 />
             </Stack>
-        </SafeAreaProvider>
+        </AppProvider>
     );
 }
 

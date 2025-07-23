@@ -7,7 +7,7 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
-  ScrollView,
+  Modal,
   Platform,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
@@ -65,6 +65,8 @@ export default function ProductCatalogue() {
   const [selectedType, setSelectedType] = useState('All');
   const [selectedLocation, setSelectedLocation] = useState('All');
   const [maxPrice, setMaxPrice] = useState('');
+  const [showModal,setShowModal] = useState(false);
+  const [modalItem,setModalItem] = useState(null);
 
   const filteredProducts = allProducts.filter((product) => {
     const typeMatch = selectedType === 'All' || product.type === selectedType;
@@ -74,6 +76,11 @@ export default function ProductCatalogue() {
       maxPrice === '' || product.price <= parseFloat(maxPrice);
     return typeMatch && locationMatch && priceMatch;
   });
+
+  const handleViewMore = (item) =>{
+    setModalItem(item);
+    setShowModal(true);
+  }
 
   return (
     <SafeAreaProvider>
@@ -145,9 +152,57 @@ export default function ProductCatalogue() {
                   <Ionicons name="cart" size={16} color="#fff" />
                   <Text style={styles.cartText}>Add to Cart</Text>
                 </TouchableOpacity>
+                <TouchableOpacity style={styles.cartBtn} onPress={()=>handleViewMore(item)}>
+                  <Text style={styles.cartText}>View More</Text>
+                </TouchableOpacity>
               </View>
             )}
           />
+          {/* Modal for View More */}
+          <Modal
+            visible={showModal}
+            transparent={true}
+            animationType="slide"
+            onRequestClose={() => setShowModal(false)}
+          >
+            <View style={{ 
+              flex: 1, 
+              backgroundColor: 'rgba(0,0,0,0.5)', 
+              justifyContent: 'center', 
+              alignItems: 'center' 
+              }}>
+              <View style={{ 
+                width: '90%', 
+                backgroundColor: '#fff', 
+                borderRadius: 8, 
+                padding: 20 
+                }}>
+                {modalItem && (
+                  <>
+                    <Image 
+                      source={{
+                        uri: modalItem.image 
+                        }} 
+                      style={{ 
+                        width: '100%', 
+                        height: 200, 
+                        borderRadius: 8 
+                        }}
+                    />
+                    <Text style={{ fontSize: 20, fontWeight: 'bold', marginTop: 10 }}>{modalItem.name}</Text>
+                    <Text style={{ fontSize: 16, color: '#555', marginVertical: 5 }}>Price: ${modalItem.price.toFixed(2)} / kg</Text>
+                    <Text style={{ fontSize: 14, color: '#777' }}>Location: {modalItem.location}</Text>
+                    <TouchableOpacity 
+                      style={{ marginTop: 20, backgroundColor: '#392867', paddingVertical: 10, borderRadius: 5, alignItems: 'center' }}
+                      onPress={() => setShowModal(false)}
+                    >
+                      <Text style={{ color: '#fff', fontSize: 16 }}>Close</Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+              </View>
+            </View>
+          </Modal>
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

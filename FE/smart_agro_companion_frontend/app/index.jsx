@@ -14,6 +14,8 @@ import { useNavigation } from "@react-navigation/native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { StatusBar } from "expo-status-bar";
+import { Stack } from "expo-router";
+import { useApp } from "./context/app-context";
 
 
 const App = () => { 
@@ -27,6 +29,7 @@ const App = () => {
 
     return (
         <SafeAreaProvider>
+            <Stack screenOptions={{headerShown: false}}/>
             <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
             <View style={styles.container}>
                 <View style={styles.wrapper}>

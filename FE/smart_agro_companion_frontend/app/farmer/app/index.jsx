@@ -11,12 +11,14 @@ import {
     TouchableOpacity, 
     FlatList, 
     Image, 
-    ScrollView
+    ScrollView,
+    Alert
 } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { Link, useRouter } from 'expo-router';
+import { useApp } from '@/app/context/app-context';
 
 //Create a context for managing global state
 export const GlobalContext = createContext();
@@ -125,6 +127,7 @@ const HomePage = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(true); // Simulating login state
     const [products, setProducts] = useState(sampleProducts);
     const router = useRouter();
+    const {user,isAuthenticated,userType,login } = useApp();
 
     // Function to handle product actions
     const handleEditProduct = (id) => {
@@ -134,6 +137,9 @@ const HomePage = () => {
     const handleDeleteProduct = (id) => {
         setProducts(products.filter(product => product.id !== id));
     };
+    useEffect(() => {
+        console.log('App State:', user, isAuthenticated, userType);
+    }, []);
 
     return (
     <GlobalContext.Provider value={{ isLoggedIn}}>

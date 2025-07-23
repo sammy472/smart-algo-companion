@@ -1,16 +1,63 @@
-import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  StyleSheet, 
-  Image, 
-  Alert 
+import React, { useState,useEffect } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  Alert,
+  ScrollView,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 import { 
   Ionicons, 
-  Entypo 
-} from '@expo/vector-icons';
+  Entypo, 
+  MaterialCommunityIcons } from '@expo/vector-icons';
+import {PaymentCheckout} from '../components/payment-component'; // Importing the PaymentCheckout component
+
+
+//AnimatedBox component for smooth transitions of the checkout section
+const AnimatedBox = ({ visible = false, children }) => {
+  const opacity = useSharedValue(visible ? 1 : 0);
+  const translateY = useSharedValue(visible ? 0 : 20);
+  const scale = useSharedValue(visible ? 1 : 0.8);
+
+  useEffect(() => {
+    opacity.value = withTiming(visible ? 1 : 0, {
+      duration: 500,
+      easing: Easing.out(Easing.ease),
+    });
+    translateY.value = withTiming(visible ? 0 : 20, {
+      duration: 500,
+      easing: Easing.out(Easing.ease),
+    });
+    scale.value = withTiming(visible ? 1 : 0.8, {
+      duration: 500,
+      easing: Easing.out(Easing.ease),
+    });
+  }, [visible]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+      transform: [
+        { translateY: translateY.value },
+        { scale: scale.value },
+      ],
+    };
+  });
+
+  return (
+    <Animated.View style={[styles.box, animatedStyle]}>
+      {children}
+    </Animated.View>
+  );
+};
 
 const initialCart = [
   {
@@ -20,7 +67,7 @@ const initialCart = [
     location: 'Marrakech',
     qty: '2kg',
     price: 3.5,
-    img: 'https://via.placeholder.com/60',
+    img: 'https://picsum.photos/seed/tomatoes/100',
   },
   {
     id: 2,
@@ -29,12 +76,17 @@ const initialCart = [
     location: 'Agadir',
     qty: '1kg',
     price: 2.0,
-    img: 'https://via.placeholder.com/60',
+    img: 'https://picsum.photos/seed/carrots/100',
   },
 ];
 
-const CartSection = () => {
-  const [cartItems, setCartItems] = useState(initialCart);
+const calculateTotal = (items) => {
+  return items.reduce((total, item) => total + item.price, 0);
+};
+
+const CartAndCheckOutSection = () => {
+  const [cartItems, setCartItems] = useState([]);
+  const [isCheckoutVisible, setIsCheckoutVisible] = useState(false);
 
   const handleRemove = (id) => {
     Alert.alert('Remove Item', 'Are you sure you want to remove this item?', [
@@ -43,166 +95,243 @@ const CartSection = () => {
         text: 'Remove',
         style: 'destructive',
         onPress: () => {
-          setCartItems(cartItems.filter((item) => item.id !== id));
+          setCartItems((prev) => prev.filter((item) => item.id !== id));
         },
       },
     ]);
   };
 
-  const total = cartItems.reduce((sum, item) => sum + item.price, 0);
+  useEffect(() => {
+    // Simulate fetching cart items from an API. API calls would typically be done here.
+    // For this example, we will just use the initialCart defined above.
+    setCartItems(initialCart);
+
+  }, []);
+
+  const handlePayment = (paymentDetails) => {
+    // This function would handle the payment logic.
+    // For this example, we'll just log the payment details.
+    console.log('Payment Details:', paymentDetails);  
+    Alert.alert('Payment Successful', 'Your payment has been processed successfully.');
+    setCartItems([]); // Clear cart after payment
+  };
 
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
-        <Ionicons name="cart-outline" size={22} color="#007AFF" />
-        <Text style={styles.sectionTitle}>Your Cart</Text>
+        <Ionicons name="cart" size={22} color="#007AFF" />
+        <Text style={styles.sectionTitle}>Shopping Cart</Text>
       </View>
 
-      {cartItems.length === 0 ? (
-        <Text style={{ color: '#888', textAlign: 'center', marginVertical: 20 }}>
-          Your cart is empty.
-        </Text>
-      ) : (
-        cartItems.map((item) => (
-          <View key={item.id} style={styles.cartRow}>
-            <Image source={{ uri: item.img }} style={styles.itemImage} />
-            <View style={styles.itemDetails}>
-              <Text style={styles.itemName}>{item.name}</Text>
-              <Text style={styles.farmerName}>{item.farmer}</Text>
-              <View style={styles.locationRow}>
-                <Entypo name="location-pin" size={14} color="#888" />
-                <Text style={styles.locationText}>{item.location}</Text>
-              </View>
-              <Text style={styles.itemQty}>{item.qty}</Text>
-            </View>
-            <View style={styles.rightSide}>
-              <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
-              <TouchableOpacity onPress={() => handleRemove(item.id)}>
-                <Ionicons name="close-circle" size={22} color="#FF3B30" />
-              </TouchableOpacity>
-            </View>
-          </View>
-        ))
-      )}
+      {!isCheckoutVisible && (<ScrollView showsVerticalScrollIndicator={false}>
+        {cartItems.length === 0 ? (
+          <Text style={styles.emptyText}>Your cart is empty.</Text>
+        ) : (
+          cartItems.map((item) => (
+            <View key={item.id} style={styles.card}>
+              <Image source={{ uri: item.img }} style={styles.image} />
 
-      {cartItems.length > 0 && (
+              <View style={styles.details}>
+                <View style={styles.rowBetween}>
+                  <Text style={styles.name}>{item.name}</Text>
+                  <Text style={styles.price}>${item.price.toFixed(2)}</Text>
+                </View>
+
+                <Text style={styles.farmer}>{item.farmer}</Text>
+
+                <View style={styles.metaRow}>
+                  <View style={styles.meta}>
+                    <Entypo name="location-pin" size={14} color="#666" />
+                    <Text style={styles.metaText}>{item.location}</Text>
+                  </View>
+                  <View style={styles.meta}>
+                    <MaterialCommunityIcons
+                      name="weight-kilogram"
+                      size={14}
+                      color="#666"
+                    />
+                    <Text style={styles.metaText}>{item.qty}</Text>
+                  </View>
+                </View>
+
+                <TouchableOpacity
+                  onPress={() => handleRemove(item.id)}
+                  style={styles.removeBtn}
+                >
+                  <Ionicons name="trash-outline" size={16} color="#FF3B30" />
+                  <Text style={styles.removeText}>Remove</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))
+        )}
+      </ScrollView>)}
+
+      {cartItems.length > 0 && !isCheckoutVisible && (
         <>
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>Total</Text>
-            <Text style={styles.totalAmount}>${total.toFixed(2)}</Text>
+            <Text style={styles.totalValue}>${calculateTotal(cartItems).toFixed(2)}</Text>
           </View>
 
-          <TouchableOpacity style={styles.checkoutButton}>
-            <Text style={styles.checkoutText}>Proceed to Checkout</Text>
+          <TouchableOpacity style={styles.checkoutButton} onPress={() => setIsCheckoutVisible(!isCheckoutVisible)}>
+            <Ionicons name="cash-outline" size={20} color="#fff" />
+            <Text style={styles.checkoutText}>Proceed to Payment</Text>
           </TouchableOpacity>
         </>
       )}
+      
+      <AnimatedBox visible={isCheckoutVisible}>
+        <PaymentCheckout onPayment={handlePayment}/>
+      </AnimatedBox>
+      {isCheckoutVisible && ( 
+      <TouchableOpacity onPress={() => setIsCheckoutVisible(!isCheckoutVisible)}>
+        <Text style={{ color: '#392867', textAlign: 'center', marginTop: 10,fontSize: 20, fontWeight: 'bold' }}>
+          Hide Payment
+        </Text>
+      </TouchableOpacity>)}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   section: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fff',
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
+    flex: 1,
     elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 16,
     gap: 8,
-    marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#222',
   },
-  cartRow: {
+  emptyText: {
+    textAlign: 'center',
+    fontSize: 14,
+    color: '#777',
+    paddingVertical: 30,
+  },
+  card: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 16,
+    backgroundColor: '#FAFAFA',
+    borderRadius: 14,
+    padding: 10,
+    marginBottom: 14,
+    elevation: 2,
   },
-  itemImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 8,
+  image: {
+    width: 70,
+    height: 70,
+    borderRadius: 10,
     marginRight: 12,
   },
-  itemDetails: {
+  details: {
     flex: 1,
+    justifyContent: 'center',
   },
-  itemName: {
+  rowBetween: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  name: {
     fontSize: 16,
     fontWeight: '600',
     color: '#333',
   },
-  farmerName: {
-    fontSize: 14,
-    color: '#555',
+  price: {
+    backgroundColor: '#007AFF',
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 13,
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    overflow: 'hidden',
+  },
+  farmer: {
+    fontSize: 13,
+    color: '#666',
     marginTop: 2,
   },
-  locationRow: {
+  metaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 4,
+  },
+  meta: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 2,
+    gap: 4,
   },
-  locationText: {
+  metaText: {
     fontSize: 12,
-    color: '#888',
-    marginLeft: 2,
+    color: '#444',
   },
-  itemQty: {
+  removeBtn: {
+    marginTop: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    alignSelf: 'flex-start',
+  },
+  removeText: {
     fontSize: 13,
-    color: '#555',
-    marginTop: 2,
-  },
-  itemPrice: {
-    fontWeight: 'bold',
-    fontSize: 14,
-    color: '#007AFF',
-    marginBottom: 4,
-  },
-  rightSide: {
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
+    fontWeight: '600',
+    color: '#FF3B30',
   },
   totalRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 8,
+    paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: '#eee',
-    paddingTop: 12,
-    marginTop: 12,
   },
   totalLabel: {
     fontSize: 16,
     fontWeight: '600',
     color: '#333',
   },
-  totalAmount: {
+  totalValue: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#007AFF',
   },
   checkoutButton: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 12,
-    borderRadius: 10,
+    backgroundColor: '#392867',
     marginTop: 14,
+    paddingVertical: 14,
+    borderRadius: 5,
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
+    gap: 6,
   },
   checkoutText: {
     color: '#fff',
-    fontWeight: '600',
     fontSize: 16,
+    fontWeight: '600',
   },
+  box: {
+    backgroundColor: '#392867',
+    padding: 10,
+    margin: 5,
+    borderRadius: 5,
+  }
 });
 
-export default CartSection;
+export default CartAndCheckOutSection;

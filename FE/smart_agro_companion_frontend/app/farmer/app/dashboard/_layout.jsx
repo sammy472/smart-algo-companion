@@ -61,7 +61,7 @@ const DashboardLayout = () => {
                             <Ionicons name="add-circle-outline" size={30} color={'white'} />
                         ),
                     }} 
-                />     
+                />    
                 <Drawer.Screen 
                     name="orders"  
                     options={{
@@ -79,7 +79,7 @@ const DashboardLayout = () => {
                             <Ionicons name="trending-up-outline" size={30} color={'white'} />
                         ),
                     }} 
-                />     
+                />      
                 
             </Drawer>
         </GestureHandlerRootView>
