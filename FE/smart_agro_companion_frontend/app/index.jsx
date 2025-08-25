@@ -11,7 +11,7 @@ import {
     Appearance 
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaView,useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { StatusBar } from "expo-status-bar";
 import { Stack } from "expo-router";
@@ -22,16 +22,18 @@ const App = () => {
     const colorScheme = Appearance.getColorScheme();
     const navigation = useNavigation();
     const [selected, setSelected] = useState('buyer');
+    const insets = useSafeAreaInsets();
     const onPress = (name) => {
         setSelected(name);
         navigation.navigate(name);
     };
 
+
     return (
-        <SafeAreaProvider>
+        <>
             <Stack screenOptions={{headerShown: false}}/>
             <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-            <View style={styles.container}>
+            <View style={[styles.container,{paddingBottom:insets.bottom}]}>
                 <View style={styles.wrapper}>
                     <View style={styles.buttonContainer}>
                         <Pressable
@@ -53,7 +55,7 @@ const App = () => {
                     </View>
                 </View>
             </View>
-        </SafeAreaProvider>
+        </>
     );
 }
 

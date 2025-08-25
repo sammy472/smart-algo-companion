@@ -1,8 +1,6 @@
 import React, { 
     useState, 
     useEffect,
-    useReducer,
-    createContext
 } from 'react';
 import { 
     View, 
@@ -14,14 +12,11 @@ import {
     ScrollView,
     Alert
 } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { Link, useRouter } from 'expo-router';
 import { useApp } from '@/app/context/app-context';
-
-//Create a context for managing global state
-export const GlobalContext = createContext();
 
 // Sample Data
 const sampleProducts = [
@@ -128,6 +123,7 @@ const HomePage = () => {
     const [products, setProducts] = useState(sampleProducts);
     const router = useRouter();
     const {user,isAuthenticated,userType,login } = useApp();
+    //const insets = useSafeAreaInsets();
 
     // Function to handle product actions
     const handleEditProduct = (id) => {
@@ -142,8 +138,7 @@ const HomePage = () => {
     }, []);
 
     return (
-    <GlobalContext.Provider value={{ isLoggedIn}}>
-        <SafeAreaProvider style={styles.container}>
+        <View style={{}}>
             <StatusBar style="light" />
             {isLoggedIn ? (
                 <ScrollView contentContainerStyle={styles.content}>
@@ -241,8 +236,7 @@ const HomePage = () => {
                     </TouchableOpacity>
                 </View>
             )}
-        </SafeAreaProvider>
-    </GlobalContext.Provider>
+        </View>
     );
 };
 

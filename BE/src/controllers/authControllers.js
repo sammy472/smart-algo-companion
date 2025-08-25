@@ -51,7 +51,7 @@ export const login = async (req, res) => {
   });
 };
 
-// 🔓 LOGOUT
+// LOGOUT
 export const logout = (req, res) => {
   req.logout(err => {
     if (err) return res.status(500).json({ error: 'Logout failed' });
@@ -59,7 +59,7 @@ export const logout = (req, res) => {
   });
 };
 
-// 🔁 RESET PASSWORD
+// RESET PASSWORD
 // Add a `role` field in the body: 'farmer' or 'buyer'
 export const resetPassword = async (req, res) => {
   const { email, newPassword, role = 'farmer' } = req.body;
@@ -78,7 +78,7 @@ export const resetPassword = async (req, res) => {
   }
 };
 
-// 🔐 OAUTH SUCCESS HANDLER (Google / Facebook)
+// OAUTH SUCCESS HANDLER (Google / Facebook)
 export const oauthSuccess = (req, res) => {
   if (req.user) {
     const role = req.user.role || 'farmer';

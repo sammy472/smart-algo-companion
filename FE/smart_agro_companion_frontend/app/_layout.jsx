@@ -1,14 +1,15 @@
 import React from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "react-native";
-import { SafeAreaProvider,SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AppProvider } from "./context/app-context";
 
 
 const Layout = () => {
     return (
+    <SafeAreaProvider>
         <AppProvider>
-            <StatusBar barStyle="dark-content" />
+            <StatusBar style="auto" />
             <Stack
                 screenOptions={
                     {
@@ -74,6 +75,7 @@ const Layout = () => {
                 />
             </Stack>
         </AppProvider>
+    </SafeAreaProvider>
     );
 }
 

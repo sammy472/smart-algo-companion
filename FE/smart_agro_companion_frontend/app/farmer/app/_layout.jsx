@@ -1,17 +1,14 @@
 import React,{useState} from "react";
 import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { 
     Appearance,
-    Text,
     View,
     Platform, 
-    TextInput,
     StyleSheet,
     Image
 } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Ionicons } from '@expo/vector-icons';
 
@@ -20,10 +17,12 @@ import Logo from "./assets/bc2.webp";
 
 const Layout = () => {
     const colorScheme = Appearance.getColorScheme();
+    const insets = useSafeAreaInsets();
+    console.log(insets);
 
     return (
-        <SafeAreaProvider>
-            <StatusBar style="dark"/>
+        <>
+            <StatusBar style='auto'/>
             <Tabs
                 initialRouteName="index"
                 screenOptions={
@@ -144,7 +143,7 @@ const Layout = () => {
                     }
                 />
             </Tabs>
-        </SafeAreaProvider>
+        </>
     );
 }
 

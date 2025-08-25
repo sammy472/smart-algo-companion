@@ -76,7 +76,25 @@ const initialCart = [
     location: 'Agadir',
     qty: '1kg',
     price: 2.0,
-    img: 'https://picsum.photos/seed/carrots/100',
+    img: 'https://picsum.photos/seed/carrots1/100',
+  },
+  {
+    id: 3,
+    name: 'Onions',
+    farmer: 'AgriLand Co.',
+    location: 'Casablanca',
+    qty: '3kg',
+    price: 4.5,
+    img: 'https://picsum.photos/seed/onions/100',
+  },
+  {
+    id: 4,
+    name: 'Lettuce',
+    farmer: 'FreshLeaf',
+    location: 'Rabat',
+    qty: '1pc',
+    price: 1.8,
+    img: 'https://picsum.photos/seed/lettuce/100',
   },
 ];
 
@@ -123,7 +141,8 @@ const CartAndCheckOutSection = () => {
         <Text style={styles.sectionTitle}>Shopping Cart</Text>
       </View>
 
-      {!isCheckoutVisible && (<ScrollView showsVerticalScrollIndicator={false}>
+      {!isCheckoutVisible && (
+      <ScrollView style={{ maxHeight: 300 }} showsVerticalScrollIndicator={false}>
         {cartItems.length === 0 ? (
           <Text style={styles.emptyText}>Your cart is empty.</Text>
         ) : (
@@ -181,9 +200,9 @@ const CartAndCheckOutSection = () => {
         </>
       )}
       
-      <AnimatedBox visible={isCheckoutVisible}>
+      {isCheckoutVisible && <AnimatedBox visible={isCheckoutVisible}>
         <PaymentCheckout onPayment={handlePayment}/>
-      </AnimatedBox>
+      </AnimatedBox>}
       {isCheckoutVisible && ( 
       <TouchableOpacity onPress={() => setIsCheckoutVisible(!isCheckoutVisible)}>
         <Text style={{ color: '#392867', textAlign: 'center', marginTop: 10,fontSize: 20, fontWeight: 'bold' }}>
