@@ -69,3 +69,14 @@ export const chats = pgTable("chats", {
   farmerId: integer("farmer_id").references(() => farmers.id),
   buyerId: integer("buyer_id").references(() => buyers.id),
 });
+
+export const notifications = pgTable("notifications", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 255 }),
+  message: text("message"),
+  type: varchar("type", { length: 50 }), // e.g., order, message, promo, system
+  read: boolean("read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  farmerId: integer("farmer_id").references(() => farmers.id).nullable(),
+  buyerId: integer("buyer_id").references(() => buyers.id).nullable(),
+});
