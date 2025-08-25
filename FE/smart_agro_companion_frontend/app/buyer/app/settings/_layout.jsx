@@ -11,11 +11,9 @@ const Layout = () => {
                 headerTitleStyle: {
                     fontWeight: "bold",
                 },
-                headerShown: true,
+                headerShown: false,
             }
-            
         }
-            
         />
     );
 }

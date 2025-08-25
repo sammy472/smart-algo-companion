@@ -4,7 +4,7 @@ import { StatusBar } from "expo-status-bar";
 const Layout = () => {  
     return (
         <>
-            <StatusBar style="light" />
+            <StatusBar style="auto" />
             <Stack
                 screenOptions={{
                     headerStyle: {
@@ -14,7 +14,7 @@ const Layout = () => {
                     headerTitleStyle: {
                         fontWeight: "bold",
                     },
-                    headerShown: true,
+                    headerShown: false,
                 }
             }
             />

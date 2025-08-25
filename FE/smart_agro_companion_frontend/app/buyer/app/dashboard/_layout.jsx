@@ -69,6 +69,15 @@ const DashboardLayout = () => {
                         ),
                     }} 
                 />
+                <Drawer.Screen 
+                    name="notifications"  
+                    options={{
+                        title: "Favorite Farms", 
+                        drawerIcon: ({ size, color }) => (
+                            <Ionicons name="bookmark-outline" size={30} color={'white'} />
+                        ),
+                    }} 
+                />
             </Drawer>
         </GestureHandlerRootView>
     );

@@ -1,106 +1,285 @@
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  Switch,
+  TextInput,
+  Alert,
+} from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
+import * as ImagePicker from "expo-image-picker";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
-export default function Home() {
+// Dummy user info
+const initialUser = {
+  name: "Samuel Boateng",
+  email: "samuel@example.com",
+  phone: "+233 20 123 4567",
+  avatar: "https://i.pravatar.cc/150?img=12",
+};
+
+export default function Settings() {
+  const [user, setUser] = useState(initialUser);
+  const [darkMode, setDarkMode] = useState(false);
+  const [language, setLanguage] = useState("English");
+  const [notifications, setNotifications] = useState(true);
+  const [privacy, setPrivacy] = useState(true);
+  const [biometrics, setBiometrics] = useState(false);
+
+  const handlePickAvatar = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.7,
+    });
+    if (!result.canceled) {
+      setUser({ ...user, avatar: result.assets[0].uri });
+    }
+  };
+
+  const handleCheckUpdates = () => {
+    Alert.alert("Check for Updates", "You’re already on the latest version.");
+  };
+
+  const handleLogout = () => {
+    Alert.alert("Logout", "Are you sure you want to log out?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Logout", onPress: () => console.log("User logged out") },
+    ]);
+  };
+
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.welcomeText}>Welcome Back 👋</Text>
-      <Text style={styles.subText}>Find fresh farm produce near you</Text>
+    <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#F6F6F6" }}>
+        <StatusBar style={darkMode ? "light" : "dark"} />
+        <ScrollView contentContainerStyle={styles.container}>
+          {/* Header */}
+          <Text style={styles.headerText}>Settings ⚙️</Text>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Featured Products</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {[1, 2, 3].map((item) => (
-            <TouchableOpacity key={item} style={styles.card}>
-              <Image
-                source={{ uri: 'https://source.unsplash.com/400x400/?fruit' + item }}
-                style={styles.image}
+          {/* Profile Section */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Profile</Text>
+            <View style={styles.profileCard}>
+              <TouchableOpacity onPress={handlePickAvatar}>
+                <Image source={{ uri: user.avatar }} style={styles.avatar} />
+                <View style={styles.cameraIcon}>
+                  <Ionicons name="camera" size={16} color="#fff" />
+                </View>
+              </TouchableOpacity>
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Name"
+                  value={user.name}
+                  onChangeText={(text) => setUser({ ...user, name: text })}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Email"
+                  keyboardType="email-address"
+                  value={user.email}
+                  onChangeText={(text) => setUser({ ...user, email: text })}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Phone"
+                  keyboardType="phone-pad"
+                  value={user.phone}
+                  onChangeText={(text) => setUser({ ...user, phone: text })}
+                />
+              </View>
+            </View>
+          </View>
+
+          {/* System Settings */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>System Preferences</Text>
+
+            <View style={styles.settingRow}>
+              <MaterialCommunityIcons
+                name="theme-light-dark"
+                size={20}
+                color="#392867"
               />
-              <Text style={styles.productName}>Organic Tomatoes</Text>
-              <Text style={styles.price}>$3.50 / kg</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
+              <Text style={styles.settingText}>Dark Mode</Text>
+              <Switch value={darkMode} onValueChange={setDarkMode} />
+            </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Nearby Farms</Text>
-        <View style={styles.farmCard}>
-          <Text style={styles.farmName}>Green Valley Farm</Text>
-          <Text style={styles.farmDetails}>Accra, Ghana</Text>
-        </View>
-        <View style={styles.farmCard}>
-          <Text style={styles.farmName}>Sunrise Harvest</Text>
-          <Text style={styles.farmDetails}>Kumasi, Ghana</Text>
-        </View>
-      </View>
-    </ScrollView>
+            <View style={styles.settingRow}>
+              <Ionicons name="language-outline" size={20} color="#392867" />
+              <Text style={styles.settingText}>Language</Text>
+              <TouchableOpacity
+                style={styles.languageButton}
+                onPress={() =>
+                  setLanguage(language === "English" ? "French" : "English")
+                }
+              >
+                <Text style={styles.languageText}>{language}</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.settingRow}>
+              <Ionicons name="notifications-outline" size={20} color="#392867" />
+              <Text style={styles.settingText}>Notifications</Text>
+              <Switch value={notifications} onValueChange={setNotifications} />
+            </View>
+
+            <View style={styles.settingRow}>
+              <Ionicons name="eye-outline" size={20} color="#392867" />
+              <Text style={styles.settingText}>Profile Visibility</Text>
+              <Switch value={privacy} onValueChange={setPrivacy} />
+            </View>
+
+            <View style={styles.settingRow}>
+              <Ionicons name="finger-print-outline" size={20} color="#392867" />
+              <Text style={styles.settingText}>Biometric Login</Text>
+              <Switch value={biometrics} onValueChange={setBiometrics} />
+            </View>
+
+            <TouchableOpacity
+              style={[styles.settingRow, { justifyContent: "flex-start" }]}
+              onPress={handleCheckUpdates}
+            >
+              <Ionicons name="cloud-download-outline" size={20} color="#392867" />
+              <Text style={[styles.settingText, { marginLeft: 10 }]}>
+                Check for Updates
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Save & Logout */}
+          <TouchableOpacity style={styles.saveButton}>
+            <Ionicons name="save-outline" size={18} color="#fff" />
+            <Text style={styles.saveButtonText}>Save Changes</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <Ionicons name="log-out-outline" size={18} color="#fff" />
+            <Text style={styles.logoutText}>Logout</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#F6F6F6',
     padding: 16,
-    flex: 1,
+    backgroundColor: "#F6F6F6",
   },
-  welcomeText: {
+  headerText: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#392867',
-    marginBottom: 4,
-  },
-  subText: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 16,
+    fontWeight: "bold",
+    color: "#392867",
+    marginBottom: 20,
+    textAlign: "center",
   },
   section: {
-    marginBottom: 24,
+    marginBottom: 28,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 10,
+    fontWeight: "600",
+    color: "#392867",
+    marginBottom: 12,
   },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginRight: 12,
-    padding: 10,
-    shadowColor: '#000',
+  profileCard: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
-    width: 140,
   },
-  image: {
-    height: 100,
-    borderRadius: 10,
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 50,
+    marginRight: 16,
+  },
+  cameraIcon: {
+    position: "absolute",
+    bottom: 4,
+    right: 12,
+    backgroundColor: "#392867",
+    borderRadius: 20,
+    padding: 4,
+  },
+  input: {
+    backgroundColor: "#F2F2F2",
+    borderRadius: 6,
+    padding: 10,
     marginBottom: 8,
-    width: '100%',
-  },
-  productName: {
-    fontWeight: '500',
     fontSize: 14,
   },
-  price: {
-    fontSize: 13,
-    color: '#392867',
-    marginTop: 4,
+  settingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 14,
+    marginBottom: 12,
+    justifyContent: "space-between",
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
   },
-  farmCard: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 10,
+  settingText: {
+    flex: 1,
+    marginLeft: 10,
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#392867",
   },
-  farmName: {
+  languageButton: {
+    backgroundColor: "#392867",
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 6,
+  },
+  languageText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  saveButton: {
+    backgroundColor: "#392867",
+    paddingVertical: 14,
+    borderRadius: 8,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  saveButtonText: {
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
+    marginLeft: 6,
   },
-  farmDetails: {
-    fontSize: 13,
-    color: '#666',
-    marginTop: 2,
+  logoutButton: {
+    backgroundColor: "#E63946",
+    paddingVertical: 14,
+    borderRadius: 8,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 40,
+  },
+  logoutText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+    marginLeft: 6,
   },
 });
