@@ -1,4 +1,3 @@
-// File: buyer/app/authentication/login.jsx
 import React, { useState } from 'react';
 import {
   View,
@@ -11,88 +10,104 @@ import {
 } from 'react-native';
 import { Ionicons, FontAwesome, AntDesign, Entypo } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function LoginScreen() {
-  const [userInfo, setUserInfo] = useState({
-    email: '',
-    password: '',
-  });
+  const [userInfo, setUserInfo] = useState({ email: '', password: '' });
 
   const handleUserInfoChange = (field, value) => {
-    setUserInfo(prev => ({
-      ...prev,
-      [field]: value,
-    }));
+    setUserInfo(prev => ({ ...prev, [field]: value }));
   };
 
   const handleLogin = () => {
     Alert.alert('Login Attempted', `Email: ${userInfo.email}\nPassword: ${userInfo.password}`);
   };
 
-  const handleGoogleLogin = () => Alert.alert('Google Login', 'Google login triggered');
-  const handleFacebookLogin = () => Alert.alert('Facebook Login', 'Facebook login triggered');
-  const handleInstagramLogin = () => Alert.alert('Instagram Login', 'Instagram login triggered');
-  const handleTiktokLogin = () => Alert.alert('TikTok Login', 'TikTok login triggered');
+  const handleSocialLogin = provider =>
+    Alert.alert(`${provider} Login`, `${provider} login triggered`);
 
   return (
     <>
-      <StatusBar style='light'/>
+      <StatusBar style="light" />
       <ScrollView
-        contentContainerStyle={style.keyboardView}
+        contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header */}
-        <View style={style.header}>
-          <Text style={style.headerTitle}>Welcome Back</Text>
-          <Text style={style.headerSubText}>Login to continue</Text>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Welcome Back</Text>
+          <Text style={styles.headerSubtitle}>Sign in to continue</Text>
         </View>
 
-        {/* Login Form */}
-        <View style={style.detailsContainer}>
-          <Text>Email</Text>
-          <View style={style.inputContainer}>
-            <Ionicons name="mail-outline" size={20} color="gray" />
+        {/* Form */}
+        <View style={styles.formContainer}>
+          <Text style={styles.label}>Email</Text>
+          <View style={styles.inputWrapper}>
+            <Ionicons name="mail-outline" size={22} color="#666" />
             <TextInput
               placeholder="you@example.com"
-              style={style.textInput}
+              style={styles.input}
               keyboardType="email-address"
+              autoCapitalize="none"
               onChange={e => handleUserInfoChange('email', e.nativeEvent.text)}
             />
           </View>
 
-          <Text>Password</Text>
-          <View style={style.inputContainer}>
-            <Ionicons name="lock-closed-outline" size={20} color="gray" />
+          <Text style={styles.label}>Password</Text>
+          <View style={styles.inputWrapper}>
+            <Ionicons name="lock-closed-outline" size={22} color="#666" />
             <TextInput
               placeholder="••••••••"
-              style={style.textInput}
+              style={styles.input}
               secureTextEntry
               onChange={e => handleUserInfoChange('password', e.nativeEvent.text)}
             />
           </View>
 
-          <TouchableOpacity style={style.button} onPress={handleLogin}>
-            <Text style={style.buttonText}>Sign In</Text>
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <LinearGradient
+              colors={['#3366CC', '#6699FF']}
+              start={[0, 0]}
+              end={[1, 1]}
+              style={styles.gradientButton}
+            >
+              <Text style={styles.loginButtonText}>Sign In</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
 
-        {/* Social Login Options */}
-        <Text style={style.orText}>OR</Text>
-        <View style={style.socialButtonsContainer}>
-          <TouchableOpacity style={[style.socialButton, { backgroundColor: '#db4437' }]} onPress={handleGoogleLogin}>
-            <AntDesign name="google" size={20} color="white" />
+        {/* Or */}
+        <Text style={styles.orText}>OR</Text>
+
+        {/* Social Buttons */}
+        <View style={styles.socialContainer}>
+          <TouchableOpacity
+            style={[styles.socialButton, { backgroundColor: '#DB4437' }]}
+            onPress={() => handleSocialLogin('Google')}
+          >
+            <AntDesign name="google" size={26} color="#fff" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={[style.socialButton, { backgroundColor: '#1877f2' }]} onPress={handleFacebookLogin}>
-            <FontAwesome name="facebook" size={20} color="white" />
+          <TouchableOpacity
+            style={[styles.socialButton, { backgroundColor: '#1877F2' }]}
+            onPress={() => handleSocialLogin('Facebook')}
+          >
+            <FontAwesome name="facebook" size={26} color="#fff" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={[style.socialButton, { backgroundColor: '#C13584' }]} onPress={handleInstagramLogin}>
-            <Entypo name="instagram" size={20} color="white" />
+          <TouchableOpacity
+            style={[styles.socialButton, { backgroundColor: '#C13584' }]}
+            onPress={() => handleSocialLogin('Instagram')}
+          >
+            <Entypo name="instagram" size={26} color="#fff" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={[style.socialButton, { backgroundColor: '#000' }]} onPress={handleTiktokLogin}>
-            <Entypo name="video-camera" size={20} color="white" />
+          <TouchableOpacity
+            style={[styles.socialButton, { backgroundColor: '#000' }]}
+            onPress={() => handleSocialLogin('TikTok')}
+          >
+            <Entypo name="video-camera" size={26} color="#fff" />
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -100,83 +115,95 @@ export default function LoginScreen() {
   );
 }
 
-const style = StyleSheet.create({
-  keyboardView: {
-    flex: 1,
-    backgroundColor: '#f9f9f9',
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    backgroundColor: '#F6F8FA',
     justifyContent: 'center',
-    padding: 20,
+    padding: 24,
+    paddingBottom: 40,
   },
   header: {
-    marginBottom: 40,
+    marginBottom: 36,
   },
   headerTitle: {
     fontSize: 32,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#3366cc',
+    color: '#3366CC',
   },
-  headerSubText: {
+  headerSubtitle: {
     textAlign: 'center',
     color: '#666',
     marginTop: 8,
+    fontSize: 16,
   },
-  detailsContainer: {
+  formContainer: {
     backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 16,
-    elevation: 4,
+    borderRadius: 20,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 5,
   },
-  inputContainer: {
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 6,
+    color: '#333',
+  },
+  inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#E0E0E0',
     borderRadius: 12,
-    paddingHorizontal: 10,
-    marginTop: 5,
-    marginBottom: 15,
+    paddingHorizontal: 12,
+    marginBottom: 16,
+    backgroundColor: '#FAFAFA',
   },
-  textInput: {
+  input: {
     flex: 1,
-    marginLeft: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    fontSize: 16,
+    color: '#333',
   },
-  button: {
-    backgroundColor: '#3366cc',
-    padding: 14,
+  loginButton: {
+    marginTop: 8,
+  },
+  gradientButton: {
+    paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
   },
-  buttonText: {
-    color: 'white',
-    fontWeight: '600',
+  loginButtonText: {
+    color: '#fff',
+    fontWeight: '700',
     fontSize: 16,
   },
   orText: {
     textAlign: 'center',
-    marginVertical: 20,
-    fontWeight: 'bold',
+    marginVertical: 24,
+    fontWeight: '600',
     color: '#999',
   },
-  socialButtonsContainer: {
-    flex:1,
+  socialContainer: {
     flexDirection: 'row',
-    justifyContent:'space-evenly',
-    alignItems:'center'
+    justifyContent: 'space-between',
   },
   socialButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    width: 70,
+    height: 70,
+    borderRadius: 35,
     justifyContent: 'center',
-    borderRadius: '50%',
-    padding: 12,
-    height:80,
-    width:80
-  },
-  socialButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginLeft: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
 });
