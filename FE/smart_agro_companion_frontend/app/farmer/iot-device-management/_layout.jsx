@@ -8,7 +8,6 @@ const Layout = () => {
                     headerShown:true,
             }}
         >
-
             <Stack.Screen
                 name="index"
                 options={{

@@ -59,7 +59,7 @@ const LoginScreen = () => {
                 </TouchableOpacity>
 
                 <Text 
-                    onPress={() => router.push("/farmer/app/settings/authentication/reset-password")} 
+                    onPress={() => router.push("/farmer/settings/authentication/reset-password")} 
                     style={styles.link}
                 >
                     Forgot Password?

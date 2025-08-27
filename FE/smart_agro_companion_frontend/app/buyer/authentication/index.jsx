@@ -43,7 +43,7 @@ const AuthenticationPage = () => {
                     <TouchableOpacity 
                         style={styles.button} 
                         onPress={
-                            () => router.push("/buyer/app/authentication/login")
+                            () => router.push("/buyer/authentication/login")
                         }
                     >
                         <Text style={styles.buttonText}>Login</Text>
@@ -52,7 +52,7 @@ const AuthenticationPage = () => {
                     <TouchableOpacity 
                         style={[styles.button, styles.signupButton]} 
                         onPress={
-                            () => router.push("/buyer/app/authentication/signup")
+                            () => router.push("/buyer/authentication/signup")
                         }
                     >
                         <Text style={styles.buttonText}>Sign Up</Text>
@@ -62,7 +62,7 @@ const AuthenticationPage = () => {
                         <Text 
                             style={{ color: "#6C5CE7", fontWeight: "bold" }} 
                             onPress={
-                                () => router.push("/buyer/app/authentication/reset-password")
+                                () => router.push("/buyer/authentication/reset-password")
                             }
                         >
                             Reset it here   

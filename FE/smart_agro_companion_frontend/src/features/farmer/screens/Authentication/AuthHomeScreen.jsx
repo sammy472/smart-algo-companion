@@ -40,7 +40,7 @@ const AuthenticationScreen = () => {
                 <TouchableOpacity 
                     style={styles.button} 
                     onPress={
-                        () => router.push("/farmer/app/settings/authentication/login")
+                        () => router.push("/farmer/settings/authentication/login")
                     }
                 >
                     <Text style={styles.buttonText}>Login</Text>
@@ -49,7 +49,7 @@ const AuthenticationScreen = () => {
                 <TouchableOpacity 
                     style={[styles.button, styles.signupButton]} 
                     onPress={
-                        () => router.push("/farmer/app/settings/authentication/signup")
+                        () => router.push("/farmer/settings/authentication/signup")
                     }
                 >
                     <Text style={styles.buttonText}>Sign Up</Text>
