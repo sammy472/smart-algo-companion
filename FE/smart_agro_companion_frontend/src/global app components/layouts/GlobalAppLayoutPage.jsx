@@ -1,0 +1,81 @@
+import React from "react";
+import { Stack } from "expo-router";
+import { StatusBar } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { AppProvider } from "@/src/context/app-context";
+
+const GlobalAppLayout = () => {
+    return (
+    <SafeAreaProvider>
+        <AppProvider>
+            <StatusBar style="auto" />
+            <Stack
+                screenOptions={
+                    {
+                        headerTitleAlign: "center",
+                        headerBackButtonDisplayMode: 'generic',
+                        headerShown: false,
+                        headerStyle: {
+                            backgroundColor: "#1D1041",
+                            shadowColor: "transparent",
+                            elevation: 0,
+                        },
+                        headerTitleStyle: {
+                            fontWeight: "bold",
+                            fontSize: 20,
+                        },
+                    }
+                }
+                initialRouteName="index"
+            >
+                <Stack.Screen 
+                    name="index"
+                    options={
+                        {
+                            title: "Farmer",
+                        }
+                    }
+                />
+                <Stack.Screen 
+                    name="farmer"
+                    options={
+                        {
+                            title: "Farmer",
+                        }
+                    }
+                />
+                <Stack.Screen 
+                    name="buyer"
+                    options={
+                        {
+                            title: "Buyer",
+                        }
+                    }
+                />
+                <Stack.Screen 
+                    name="+not-found"
+                    options={
+                        {
+                            title: "404 - Page Not Found",
+                            headerShown: true,
+                            headerTitleAlign: "center",
+                            headerStyle: {
+                                backgroundColor: "#1D1041",
+                                shadowColor: "transparent",
+                                elevation: 0,
+                            }, 
+                            headerTitleStyle: {
+                                fontWeight: "bold",
+                                fontSize: 20,
+                                color: "white",
+                            },
+                        }
+                    }
+                />
+            </Stack>
+        </AppProvider>
+    </SafeAreaProvider>
+    );
+}
+
+export default GlobalAppLayout;
