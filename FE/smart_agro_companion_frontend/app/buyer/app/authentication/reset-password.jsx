@@ -1,5 +1,4 @@
-// File: buyer/app/authentication/reset-password.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   View, 
   Text, 
@@ -11,8 +10,16 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function ResetPasswordScreen() {
+  const [email, setEmail] = useState('');
+
+  const handleSendReset = () => {
+    // Placeholder for actual reset logic
+    alert(`Reset link sent to ${email}`);
+  };
+
   return (
     <>
       <StatusBar style='light'/>
@@ -28,16 +35,25 @@ export default function ResetPasswordScreen() {
         <View style={styles.card}>
           <Text style={styles.label}>Email</Text>
           <View style={styles.inputGroup}>
-            <Feather name="mail" size={20} color="gray" />
+            <Feather name="mail" size={20} color="#666" />
             <TextInput
               placeholder="Enter your email"
               style={styles.input}
               keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
             />
           </View>
 
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Send Reset Link</Text>
+          <TouchableOpacity style={styles.button} onPress={handleSendReset}>
+            <LinearGradient
+              colors={['#cc3300', '#ff5733']}
+              start={[0, 0]}
+              end={[1, 1]}
+              style={styles.gradientButton}
+            >
+              <Text style={styles.buttonText}>Send Reset Link</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -49,14 +65,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#F6F8FA',
     padding: 20,
   },
   header: {
     marginBottom: 30,
   },
   title: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: 'bold',
     textAlign: 'center',
     color: '#cc3300',
@@ -64,39 +80,52 @@ const styles = StyleSheet.create({
   subtitle: {
     textAlign: 'center',
     color: '#666',
-    marginTop: 10,
+    marginTop: 8,
+    fontSize: 14,
   },
   card: {
     backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 16,
-    elevation: 4,
+    borderRadius: 20,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 5,
   },
   label: {
-    marginBottom: 5,
+    marginBottom: 6,
+    fontWeight: '500',
+    color: '#444',
   },
   inputGroup: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#E0E0E0',
     borderRadius: 12,
-    paddingHorizontal: 10,
-    marginBottom: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 24,
+    backgroundColor: '#FAFAFA',
   },
   input: {
     flex: 1,
     marginLeft: 10,
+    fontSize: 16,
+    color: '#333',
   },
   button: {
-    backgroundColor: '#cc3300',
-    padding: 14,
+    marginTop: 10,
+  },
+  gradientButton: {
+    paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
   },
   buttonText: {
-    color: 'white',
-    fontWeight: '600',
+    color: '#fff',
+    fontWeight: '700',
     fontSize: 16,
   },
 });

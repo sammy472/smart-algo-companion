@@ -2,7 +2,7 @@ import React from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { AppProvider } from "./context/app-context";
+import { AppProvider } from "../context/app-context";
 
 
 const Layout = () => {

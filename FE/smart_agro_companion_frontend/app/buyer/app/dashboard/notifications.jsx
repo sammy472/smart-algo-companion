@@ -12,7 +12,6 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
-
 const initialNotifications = [
   {
     id: "n1",
@@ -72,9 +71,7 @@ const initialNotifications = [
   },
 ];
 
-/* ---------------------------------------------
-   Utilities
-------------------------------------------------*/
+
 const isSameDay = (a, b) =>
   a.getFullYear() === b.getFullYear() &&
   a.getMonth() === b.getMonth() &&
@@ -107,7 +104,6 @@ const iconForType = (type) => {
       return <Ionicons name="information-circle-outline" size={20} color="#392867" />;
   }
 };
-
 
 export default function Notifications() {
   const [items, setItems] = useState(initialNotifications);

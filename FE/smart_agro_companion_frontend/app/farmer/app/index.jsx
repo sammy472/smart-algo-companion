@@ -1,7 +1,4 @@
-import React, { 
-    useState, 
-    useEffect,
-} from 'react';
+import React, { useState } from 'react';
 import { 
     View, 
     Text, 
@@ -9,412 +6,175 @@ import {
     TouchableOpacity, 
     FlatList, 
     Image, 
-    ScrollView,
-    Alert
+    ScrollView 
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { Link, useRouter } from 'expo-router';
-import { useApp } from '@/app/context/app-context';
+import { useApp } from '@/context/app-context';
+import { LinearGradient } from 'expo-linear-gradient';
 
-// Sample Data
 const sampleProducts = [
-    { 
-        id: '1', 
-        name: 'Organic Tomatoes', 
-        price: '$10/kg', 
-        image: 'https://via.placeholder.com/100', 
-        rating: 4.5 
-
-    },
-    { 
-        id: '2', 
-        name: 'Fresh Corn', 
-        price: '$5/dozen', 
-        image: 'https://via.placeholder.com/100', 
-        rating: 4.8 
-
-    },
-    { 
-        id: '3', 
-        name: 'Organic Apples', 
-        price: '$8/kg', 
-        image: 'https://via.placeholder.com/100', 
-        rating: 4.2
-    },
-    { 
-        id: '4', 
-        name: 'Green Peppers', 
-        price: '$6/kg', 
-        image: 'https://via.placeholder.com/100', 
-        rating: 4.6
-    },
-    { 
-        id: '5', 
-        name: 'Organic Strawberries', 
-        price: '$12/kg', 
-        image: 'https://via.placeholder.com/100', 
-        rating: 4.4 
-    },
-    { 
-        id: '6', 
-        name: 'Fresh Bananas', 
-        price: '$3/dozen', 
-        image: 'https://via.placeholder.com/100', 
-        rating: 4.7 
-    },
-    { 
-        id: '7', 
-        name: 'Organic Carrots', 
-        price: '$7/kg', 
-        image: 'https://via.placeholder.com/100', 
-        rating: 4.3 
-    },
-    { 
-        id: '8', 
-        name: 'Sweet Potatoes', 
-        price: '$9/kg', 
-        image: 'https://via.placeholder.com/100', 
-        rating: 4.5 
-    },
-    { 
-        id: '9', 
-        name: 'Fresh Oranges', 
-        price: '$5/kg', 
-        image: 'https://via.placeholder.com/100', 
-        rating: 4.6 
-    },
-    { 
-        id: '10', 
-        name: 'Organic Grapes', 
-        price: '$15/kg', 
-        image: 'https://via.placeholder.com/100', 
-        rating: 4.4 
-    },
+    { id: '1', name: 'Organic Tomatoes', price: '$10/kg', image: 'https://via.placeholder.com/100', rating: 4.5 },
+    { id: '2', name: 'Fresh Corn', price: '$5/dozen', image: 'https://via.placeholder.com/100', rating: 4.8 },
+    { id: '3', name: 'Organic Apples', price: '$8/kg', image: 'https://via.placeholder.com/100', rating: 4.2 },
+    { id: '4', name: 'Green Peppers', price: '$6/kg', image: 'https://via.placeholder.com/100', rating: 4.6 },
+    { id: '5', name: 'Organic Strawberries', price: '$12/kg', image: 'https://via.placeholder.com/100', rating: 4.4 },
 ];
 
 const analyticsData = [
-    { 
-        id: '1', 
-        label: 'Total Sales', 
-        value: '$3,500'
-    },
-    { 
-        id: '2', 
-        label: 'Orders This Month', 
-        value: '120' 
-    },
-    { 
-        id: '3', 
-        label: 'Inventory Alerts', 
-        value: '2 Low Stock' 
-
-    },
-    { 
-        id: '4', 
-        label: 'New Orders',
-        value: '5'
-    }
+    { id: '1', label: 'Total Sales', value: '$3,500' },
+    { id: '2', label: 'Orders This Month', value: '120' },
+    { id: '3', label: 'Inventory Alerts', value: '2 Low Stock' },
+    { id: '4', label: 'New Orders', value: '5' }
 ];
 
 const HomePage = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(true); // Simulating login state
     const [products, setProducts] = useState(sampleProducts);
     const router = useRouter();
-    const {user,isAuthenticated,userType,login } = useApp();
-    //const insets = useSafeAreaInsets();
+    const { user } = useApp();
 
-    // Function to handle product actions
-    const handleEditProduct = (id) => {
-        console.log('Edit Product:', id);
-    };
-
-    const handleDeleteProduct = (id) => {
-        setProducts(products.filter(product => product.id !== id));
-    };
-    useEffect(() => {
-        console.log('App State:', user, isAuthenticated, userType);
-    }, []);
+    const handleEditProduct = (id) => console.log('Edit Product:', id);
+    const handleDeleteProduct = (id) => setProducts(products.filter(p => p.id !== id));
 
     return (
-        <View style={{}}>
+        <View style={styles.container}>
             <StatusBar style="light" />
-            {isLoggedIn ? (
-                <ScrollView contentContainerStyle={styles.content}>
-                    
-                    {/* Welcome Section */}
-                    <View style={styles.welcomeBox}>
-                        <Text style={styles.welcomeText}>Welcome back, SAMUEL!</Text>
-                        <MaterialIcons name="person" size={30} color="white" />
-                    </View>
-                    <View style={styles.switchWrapper}>
-                        <Text style={styles.switchText}>
-                            Switch to a Buyer?
-                        </Text>
-                        <Link href="/buyer/app" style={styles.link}>
-                            <MaterialIcons name="sell" size={30} color="white" /> 
-                        </Link>
-                    </View>
 
-                    {/* Analytics Section */}
-                    <View style={styles.analyticsContainer}>
-                        {analyticsData.map((item) => (
-                            <View key={item.id} style={styles.analyticsCard}>
-                                <Text style={styles.analyticsLabel}>{item.label}</Text>
-                                <Text style={styles.analyticsValue}>{item.value}</Text>
+            <ScrollView contentContainerStyle={styles.content}>
+
+                {/* Welcome Section */}
+                <LinearGradient colors={['#4c669f', '#3b5998', '#192f6a']} style={styles.welcomeBox}>
+                    <View>
+                        <Text style={styles.welcomeText}>Hello, {user?.firstName || 'SAMUEL'}!</Text>
+                        <Text style={styles.welcomeSub}>Here's your dashboard today</Text>
+                    </View>
+                    <MaterialIcons name="person" size={36} color="white" />
+                </LinearGradient>
+
+                {/* Analytics Section */}
+                <View style={styles.analyticsContainer}>
+                    {analyticsData.map(a => (
+                        <View key={a.id} style={styles.analyticsCard}>
+                            <Text style={styles.analyticsLabel}>{a.label}</Text>
+                            <Text style={styles.analyticsValue}>{a.value}</Text>
+                        </View>
+                    ))}
+                </View>
+
+                {/* Products Section */}
+                <Text style={styles.sectionTitle}>Your Products</Text>
+                <FlatList
+                    data={products}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    renderItem={({ item }) => (
+                        <View style={styles.productCard}>
+                            <Image source={{ uri: item.image }} style={styles.productImage} />
+                            <Text style={styles.productName}>{item.name}</Text>
+                            <Text style={styles.productPrice}>{item.price}</Text>
+                            <View style={styles.productActions}>
+                                <TouchableOpacity onPress={() => handleEditProduct(item.id)}>
+                                    <MaterialIcons name="edit" size={20} color="#4caf50" />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => handleDeleteProduct(item.id)}>
+                                    <MaterialIcons name="delete" size={20} color="#f44336" />
+                                </TouchableOpacity>
                             </View>
-                        ))}
-                    </View>
+                        </View>
+                    )}
+                    keyExtractor={item => item.id}
+                />
 
-                    {/* Product Listings */}
-                    <Text style={styles.sectionTitle}>Your Products</Text>
-                    <FlatList
-                        data={products}
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        renderItem={({ item }) => (
-                            <View style={styles.productCard}>
-                                <Image source={{ uri: item.image }} style={styles.productImage} />
-                                <Text style={styles.productName}>{item.name}</Text>
-                                <Text style={styles.productPrice}>{item.price}</Text>
-                                <View style={styles.productActions}>
-                                    <TouchableOpacity onPress={() => handleEditProduct(item.id)}>
-                                        <MaterialIcons name="edit" size={20} color="blue" />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => handleDeleteProduct(item.id)}>
-                                        <MaterialIcons name="delete" size={20} color="red" />
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        )}
-                        keyExtractor={(item) => item.id}
-                    />
-
-                    {/* Quick Actions */}
-                    <Text style={styles.sectionTitle}>Quick Actions</Text>
-                    <View style={styles.actionsContainer}>
-                        <TouchableOpacity 
-                            style={styles.actionButton}
-                            onPress={() => {
-                                router.push('farmer/app/dashboard/add-product')
-                            }}
-                        >
-                            <MaterialIcons name="add-circle" size={30} color="white" />
-                            <Text style={styles.actionText}>Add Product</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.actionButton}>
-                            <MaterialIcons name="shopping-cart" size={30} color="white" />
-                            <Text style={styles.actionText}>View Orders</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.actionButton}>
-                            <MaterialIcons name="bar-chart" size={30} color="white" />
-                            <Text style={styles.actionText}>Market Trends</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                </ScrollView>
-            ) : (
-                // If user is not logged in
-                <View style={styles.authContainer}>
-                    <Text style={styles.authText}>Welcome to Smart Agro Companion</Text>
+                {/* Quick Actions */}
+                <Text style={styles.sectionTitle}>Quick Actions</Text>
+                <View style={styles.actionsContainer}>
                     <TouchableOpacity 
-                        style={styles.authButton}
-                        onPress={() => {
-                            router.push('/farmer/app/settings/authentication/login'); // Navigate to login page
-                        }}
-                        >
-                        <Text style={styles.authButtonText}>Login</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                        style={styles.authButton}
-                        onPress={() => {
-                            router.push('/farmer/app/settings/authentication/signup'); // Navigate to signup page
-                        }}
+                        style={[styles.actionButton, {backgroundColor:'#ff6f61'}]}
+                        onPress={() => router.push('farmer/app/dashboard/add-product')}
                     >
-                        <Text style={styles.authButtonText}>Create Account</Text>
+                        <MaterialIcons name="add-circle" size={28} color="white" />
+                        <Text style={styles.actionText}>Add Product</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[styles.actionButton, {backgroundColor:'#4caf50'}]}>
+                        <MaterialIcons name="shopping-cart" size={28} color="white" />
+                        <Text style={styles.actionText}>View Orders</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[styles.actionButton, {backgroundColor:'#1e88e5'}]}>
+                        <MaterialIcons name="bar-chart" size={28} color="white" />
+                        <Text style={styles.actionText}>Market Trends</Text>
                     </TouchableOpacity>
                 </View>
-            )}
+
+            </ScrollView>
         </View>
     );
 };
 
-// Styles
 const styles = StyleSheet.create({
-    container: { 
-        flex: 1, 
-        backgroundColor: '#f8f8f8' 
-    },
-    content: { 
-        padding: 20, 
-        alignItems: 'center' 
-    },
-    // Welcome Section
+    container: { flex: 1, backgroundColor: '#f0f2f5' },
+    content: { padding: 20 },
+
     welcomeBox: { 
         flexDirection: 'row', 
-        alignItems: 'center', 
         justifyContent: 'space-between', 
-        backgroundColor: '#392867', 
-        padding: 15, 
-        borderRadius: 4, 
-        width: '100%', 
+        alignItems: 'center', 
+        padding: 20, 
+        borderRadius: 20, 
         marginBottom: 20 
     },
-    welcomeText: { 
-        fontSize: 20, 
-        color: 'white', 
-        fontWeight: 'bold' 
-    },
-    // Analytics Section
+    welcomeText: { fontSize: 22, fontWeight: 'bold', color: 'white' },
+    welcomeSub: { fontSize: 14, color: 'white', marginTop: 4 },
+
     analyticsContainer: { 
         flexDirection: 'row', 
-        justifyContent: 'space-between',
-        width: '100%', 
+        justifyContent: 'space-between', 
         marginBottom: 20 
     },
     analyticsCard: { 
-        flex: 1,
-        flexDirection: 'column',    
+        flex: 1, 
         backgroundColor: 'white', 
+        marginHorizontal: 5, 
         padding: 15, 
-        borderRadius: 10, 
-        width: '30%', 
-        alignItems: 'center', 
-        elevation: 2,
-        justifyContent: 'center',
+        borderRadius: 15, 
+        alignItems: 'center',
+        elevation: 3,
         shadowColor: '#000',
-        shadowOpacity: 0.2,
-        margin: 2,
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
     },
-    analyticsLabel: { 
-        fontSize: 14, 
-        color: '#555',
-        fontFamily: 'sans-serif'
-    },
-    analyticsValue: { 
-        fontSize: 16, 
-        fontWeight: 'bold', 
-        color: '#333' 
-    },
-    // Product Listings
-    sectionTitle: { 
-        fontSize: 18, 
-        fontWeight: 'bold', 
-        alignSelf: 'flex-start', 
-        marginBottom: 10 
-    },
+    analyticsLabel: { fontSize: 14, color: '#777', textAlign: 'center' },
+    analyticsValue: { fontSize: 18, fontWeight: '700', marginTop: 5, color: '#333' },
+
+    sectionTitle: { fontSize: 18, fontWeight: '700', marginVertical: 15 },
     productCard: { 
         backgroundColor: 'white', 
-        padding: 10, 
-        borderRadius: 10, 
-        marginRight: 10, 
-        alignItems: 'center' 
-    },
-    productImage: { 
-        width: 80, 
-        height: 80, 
-        borderRadius: 10, 
-        marginBottom: 5 
-    },
-    productName: { 
-        fontSize: 14, 
-        fontWeight: 'bold' 
-    },
-    productPrice: { 
-        fontSize: 12, 
-        color: 'green' 
-    },
-    productActions: { 
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
-        width: 60, 
-        marginTop: 5 
-    },
-    // Quick Actions
-    actionsContainer: { 
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
-        width: '100%', 
-        marginTop: 10 
-    },
-    actionButton: { 
-        backgroundColor: '#392867', 
+        borderRadius: 20, 
         padding: 15, 
-        borderRadius: 4, 
+        marginRight: 15, 
         alignItems: 'center', 
-        width: '30%' 
+        width: 140,
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
     },
-    actionText: { 
-        color: 'white', 
-        fontWeight: 'bold', 
-        marginTop: 5 
-    },
+    productImage: { width: 100, height: 100, borderRadius: 12, marginBottom: 10 },
+    productName: { fontWeight: '600', fontSize: 14, textAlign: 'center' },
+    productPrice: { fontSize: 12, color: '#4caf50', marginBottom: 8 },
+    productActions: { flexDirection: 'row', justifyContent: 'space-between', width: 60 },
 
-    // Auth Screen
-    authContainer: { 
-        flex: 1, 
-        justifyContent: 'center', 
-        alignItems: 'center' 
-    },
-    authText: { 
-        fontSize: 18, 
-        fontWeight: 'bold', 
-        marginBottom: 20 
-    },
-    authButton: { 
-        padding: 15, 
-        borderRadius: 4, 
-        marginBottom: 10, 
-        width: '80%', 
-        alignItems: 'center',
-        backgroundColor: "#392867",
-        marginBottom: 15,
-        elevation: 5, // Shadow effect (Android)
-        shadowColor: "#000", // Shadow effect (iOS)
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 3, 
-    },
-    authButtonText: { 
-        color: 'white', 
-        fontSize: 16, 
-        fontWeight: 'bold' 
-    },
-    switchText:{ 
-        fontSize: 18, 
-        color: '#666', 
-        fontWeight: 'bold', 
-        marginRight: 8,
-        fontStyle: 'italic',
-        fontFamily: 'Poppins_600SemiBold'
-    },
-    switchWrapper:{ 
-        flex: 1, 
-        backgroundColor: '#392867',
-        flexDirection: 'column', 
-        justifyContent: 'center', 
-        marginBottom: 16,
-        alignItems: 'center',
-        padding: 10,
-        borderRadius: 5,
-        width: '100%',
-    },
-    link:{
+    actionsContainer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 15 },
+    actionButton: { 
         flex: 1,
-        backgroundColor: 'green',
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 4,
-        marginTop: 16,
-        color: '#fff',
-        width: '80%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center',
-        fontSize: 16,
-        fontWeight: 'bold',
-  },
+        marginHorizontal: 5,
+        borderRadius: 20,
+        paddingVertical: 15,
+        alignItems: 'center'
+    },
+    actionText: { color: 'white', fontWeight: '700', marginTop: 5 }
 });
 
 export default HomePage;

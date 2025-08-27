@@ -10,9 +10,8 @@ const getTableByRole = (role) => {
 };
 
 //SIGN UP (REGISTER)
-// Add a field: `role` in the request body with value 'farmer' or 'buyer'
 export const signup = async (req, res) => {
-  const { name, email, password, phone_number, address, location, role = 'farmer' } = req.body;
+  const { name, email, password, phone_number, address, location, role} = req.body;
   const table = getTableByRole(role);
   try {
     const existingUser = await db.select().from(table).where(eq(table.email, email));
@@ -60,9 +59,8 @@ export const logout = (req, res) => {
 };
 
 // RESET PASSWORD
-// Add a `role` field in the body: 'farmer' or 'buyer'
 export const resetPassword = async (req, res) => {
-  const { email, newPassword, role = 'farmer' } = req.body;
+  const { email, newPassword, role  } = req.body;
   const table = getTableByRole(role);
   try {
     const user = await db.select().from(table).where(eq(table.email, email));

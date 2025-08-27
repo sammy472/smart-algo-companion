@@ -50,7 +50,7 @@ export const orders = pgTable("orders", {
   avatar: text("avatar"),
   price: integer("price"),
   quantity: integer("quantity"),
-  status: varchar("status", { length: 100 }),
+  status: varchar("status", { length: 100 }).default("pending"),
   farmerConfirmed: boolean("farmer_confirmed").default(false),
   buyerConfirmed: boolean("buyer_confirmed").default(false),
   farmerId: integer("farmer_id").references(() => farmers.id),

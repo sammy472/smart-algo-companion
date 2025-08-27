@@ -284,7 +284,7 @@ export const AppProvider = ({ children }) => {
   };
 
   // Actions
-  const login = async (email, password, userType) => {
+  const login = async (email, userType) => {
     dispatch({ type: ActionTypes.SET_LOADING, payload: true });
     
     try {

@@ -72,9 +72,9 @@ const DashboardLayout = () => {
                 <Drawer.Screen 
                     name="notifications"  
                     options={{
-                        title: "Favorite Farms", 
-                        drawerIcon: ({ size, color }) => (
-                            <Ionicons name="bookmark-outline" size={30} color={'white'} />
+                        title: "Notifications", 
+                        drawerIcon: ({ size, color,focused }) => (
+                            <Ionicons name="notifications-outline" size={30} color={'white'} />
                         ),
                     }} 
                 />

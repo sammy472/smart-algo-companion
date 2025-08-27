@@ -1,112 +1,128 @@
-import React,{
-    useState,
-    useCallback
-} from "react";
+import React, { useState } from "react";
 import { 
-    View,
-    Pressable,
-    Platform,
-    StyleSheet,
-    Text,
-    Appearance 
+  View, 
+  Pressable, 
+  StyleSheet, 
+  Text, 
+  Appearance 
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { SafeAreaView,useSafeAreaInsets } from "react-native-safe-area-context";
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Stack } from "expo-router";
-import { useApp } from "./context/app-context";
-
 
 const App = () => { 
-    const colorScheme = Appearance.getColorScheme();
-    const navigation = useNavigation();
-    const [selected, setSelected] = useState('buyer');
-    const insets = useSafeAreaInsets();
-    const onPress = (name) => {
-        setSelected(name);
-        navigation.navigate(name);
-    };
+  const colorScheme = Appearance.getColorScheme();
+  const navigation = useNavigation();
+  const [selected, setSelected] = useState("buyer");
+  const insets = useSafeAreaInsets();
 
+  const onPress = (role) => {
+    setSelected(role);
+    navigation.navigate(`${role}/app`);
+  };
 
-    return (
-        <>
-            <Stack screenOptions={{headerShown: false}}/>
-            <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-            <View style={[styles.container,{paddingBottom:insets.bottom}]}>
-                <View style={styles.wrapper}>
-                    <View style={styles.buttonContainer}>
-                        <Pressable
-                            style={[styles.button, selected === "farmer" && styles.selected]}
-                            onPress={() => onPress("farmer/app")}
-                        >
-                            <MaterialIcons name="agriculture" size={24} color="#1D1041" />
-                            <Text style={styles.text}>Farmer</Text>
-                        </Pressable>
-                    </View>
-                    <View style={styles.buttonContainer}>
-                        <Pressable
-                            style={[styles.button, selected === "buyer" && styles.selected]}
-                            onPress={() => onPress("buyer/app")}
-                        >
-                            <MaterialIcons name="sell" size={24} color="#1D1041" />
-                            <Text style={styles.text}>Buyer</Text>
-                        </Pressable>
-                    </View>
-                </View>
-            </View>
-        </>
-    );
-}
+  return (
+    <SafeAreaView style={[styles.container, { paddingBottom: insets.bottom }]}>
+      <Stack screenOptions={{ headerShown: false }} />
+      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
 
-export default App;
+      <Text style={styles.title}>Select Your Role</Text>
+      <View style={styles.buttonWrapper}>
+
+        <Pressable 
+          onPress={() => onPress("farmer")} 
+          style={({ pressed }) => [
+            styles.card,
+            selected === "farmer" && styles.selected,
+            pressed && { opacity: 0.8 }
+          ]}
+        >
+          <LinearGradient
+            colors={selected === "farmer" ? ["#FFA726", "#FB8C00"] : ["#FFF", "#FFF"]}
+            style={styles.gradient}
+          >
+            <MaterialCommunityIcons 
+              name="tractor" 
+              size={48} 
+              color={selected === "farmer" ? "#fff" : "#FFA726"} 
+            />
+            <Text style={[styles.cardText, selected === "farmer" && { color: "#fff" }]}>Farmer</Text>
+          </LinearGradient>
+        </Pressable>
+
+        <Pressable 
+          onPress={() => onPress("buyer")} 
+          style={({ pressed }) => [
+            styles.card,
+            selected === "buyer" && styles.selected,
+            pressed && { opacity: 0.8 }
+          ]}
+        >
+          <LinearGradient
+            colors={selected === "buyer" ? ["#42A5F5", "#1E88E5"] : ["#FFF", "#FFF"]}
+            style={styles.gradient}
+          >
+            <MaterialCommunityIcons 
+              name="shopping" 
+              size={48} 
+              color={selected === "buyer" ? "#fff" : "#42A5F5"} 
+            />
+            <Text style={[styles.cardText, selected === "buyer" && { color: "#fff" }]}>Buyer</Text>
+          </LinearGradient>
+        </Pressable>
+
+      </View>
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: "row",
-        justifyContent: "space-around",
-        alignItems: "center",
-        backgroundColor: "#392867",
-        padding: 10,
-    },
-    button: {
-        padding: 10,
-        borderRadius: 5,
-        backgroundColor: "#fff",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "80%",
-        height: "40%",
-    },
-    buttonContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginVertical: 'auto',
-        marginHorizontal: 'auto',
-        width: "100%",
-        height: "100%",
-    },
-    selected: {
-        backgroundColor: "#F1E2E2",
-    },
-    text: {
-        color: "#000",
-        fontSize: 20,
-        fontWeight: "bold",
-    },
-    wrapper: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "row",
-        width: "80%",
-        height: "40%",
-        opacity: 0.8,
-        backdropFilter: "blur(10px)",
-        borderRadius: 10,
-        boxShadow: "0 0 10px rgba(240, 233, 233, 0.5)",
-        backgroundColor: "#1D1041",
-    },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f4f4f8",
+    paddingHorizontal: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "700",
+    marginBottom: 40,
+    color: "#333",
+  },
+  buttonWrapper: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  card: {
+    flex: 1,
+    marginHorizontal: 10,
+    borderRadius: 20,
+    elevation: 6,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+  },
+  gradient: {
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 30,
+    borderRadius: 20,
+  },
+  cardText: {
+    marginTop: 12,
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#333",
+  },
+  selected: {
+    transform: [{ scale: 1.05 }],
+  },
 });
+
+export default App;

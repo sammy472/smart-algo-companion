@@ -1,4 +1,3 @@
-// File: buyer/app/authentication/signup.jsx
 import React, { useState } from 'react';
 import {
   View,
@@ -20,6 +19,7 @@ import {
   Feather,
 } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function SignupScreen() {
   const [form, setForm] = useState({
@@ -37,62 +37,33 @@ export default function SignupScreen() {
 
   const [avatar, setAvatar] = useState(null);
 
-  const handleChange = (key, value) => {
-    setForm(prev => ({ ...prev, [key]: value }));
-  };
+  const handleChange = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
 
   const pickAvatar = async () => {
-    Alert.alert(
-      'Choose Avatar',
-      'Select image source',
-      [
-        {
-          text: 'Camera',
-          onPress: async () => {
-            const permission = await ImagePicker.requestCameraPermissionsAsync();
-            if (!permission.granted) {
-              Alert.alert('Permission required', 'Camera access is needed to take a photo.');
-              return;
-            }
-
-            const result = await ImagePicker.launchCameraAsync({
-              allowsEditing: true,
-              quality: 1,
-              aspect: [1, 1],
-            });
-
-            if (!result.canceled) {
-              setAvatar(result.assets[0].uri);
-            }
-          },
+    Alert.alert('Choose Avatar', 'Select image source', [
+      {
+        text: 'Camera',
+        onPress: async () => {
+          const permission = await ImagePicker.requestCameraPermissionsAsync();
+          if (!permission.granted) return Alert.alert('Permission required', 'Camera access is needed.');
+          const result = await ImagePicker.launchCameraAsync({ allowsEditing: true, quality: 1, aspect: [1, 1] });
+          if (!result.canceled) setAvatar(result.assets[0].uri);
         },
-        {
-          text: 'Gallery',
-          onPress: async () => {
-            const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-            if (!permission.granted) {
-              Alert.alert('Permission required', 'Access to media library is needed.');
-              return;
-            }
-
-            const result = await ImagePicker.launchImageLibraryAsync({
-              allowsEditing: true,
-              quality: 1,
-              aspect: [1, 1],
-            });
-
-            if (!result.canceled) {
-              setAvatar(result.assets[0].uri);
-            }
-          },
+      },
+      {
+        text: 'Gallery',
+        onPress: async () => {
+          const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+          if (!permission.granted) return Alert.alert('Permission required', 'Media library access is needed.');
+          const result = await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, quality: 1, aspect: [1, 1] });
+          if (!result.canceled) setAvatar(result.assets[0].uri);
         },
-        { text: 'Cancel', style: 'cancel' },
-      ],
-      { cancelable: true }
-    );
+      },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
   };
 
-  const renderField = (label, icon, fieldKey, placeholder, secure = false, keyboard = 'default') => (
+  const renderField = (label, icon, key, placeholder, secure = false, keyboard = 'default') => (
     <>
       <Text style={styles.label}>{label}</Text>
       <View style={styles.inputWrapper}>
@@ -102,7 +73,7 @@ export default function SignupScreen() {
           placeholder={placeholder}
           secureTextEntry={secure}
           keyboardType={keyboard}
-          onChangeText={text => handleChange(fieldKey, text)}
+          onChangeText={text => handleChange(key, text)}
         />
       </View>
     </>
@@ -113,17 +84,18 @@ export default function SignupScreen() {
       <StatusBar style="light"/>
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Create Account</Text>
+
         <View style={styles.card}>
-          {renderField('First Name', <FontAwesome5 name="user" size={18} color="gray" />, 'firstName', 'Samuel')}
-          {renderField('Family Name', <FontAwesome5 name="user-tie" size={18} color="gray" />, 'lastName', 'Boateng')}
-          {renderField('Email Address', <Ionicons name="mail-outline" size={20} color="gray" />, 'email', 'you@example.com', false, 'email-address')}
-          {renderField('Confirm Email', <Ionicons name="mail" size={20} color="gray" />, 'confirmEmail', 'you@example.com', false, 'email-address')}
-          {renderField('City / Location', <Entypo name="location-pin" size={20} color="gray" />, 'city', 'Marrakech')}
-          {renderField('Telephone', <Feather name="phone" size={18} color="gray" />, 'telephone', '+212...', false, 'phone-pad')}
+          {renderField('First Name', <FontAwesome5 name="user" size={18} color="#666" />, 'firstName', 'Samuel')}
+          {renderField('Family Name', <FontAwesome5 name="user-tie" size={18} color="#666" />, 'lastName', 'Boateng')}
+          {renderField('Email Address', <Ionicons name="mail-outline" size={20} color="#666" />, 'email', 'you@example.com', false, 'email-address')}
+          {renderField('Confirm Email', <Ionicons name="mail" size={20} color="#666" />, 'confirmEmail', 'you@example.com', false, 'email-address')}
+          {renderField('City / Location', <Entypo name="location-pin" size={20} color="#666" />, 'city', 'Marrakech')}
+          {renderField('Telephone', <Feather name="phone" size={18} color="#666" />, 'telephone', '+212...', false, 'phone-pad')}
 
           <Text style={styles.label}>Status</Text>
           <View style={styles.pickerWrapper}>
-            <MaterialIcons name="person-pin" size={20} color="gray" />
+            <MaterialIcons name="person-pin" size={20} color="#666" />
             <Picker
               selectedValue={form.status}
               onValueChange={value => handleChange('status', value)}
@@ -134,22 +106,26 @@ export default function SignupScreen() {
             </Picker>
           </View>
 
-          {renderField('Gender', <Ionicons name="transgender-outline" size={20} color="gray" />, 'gender', 'Male / Female / Other')}
-          
+          {renderField('Gender', <Ionicons name="transgender-outline" size={20} color="#666" />, 'gender', 'Male / Female / Other')}
+
           <Text style={styles.label}>Avatar</Text>
           <TouchableOpacity style={styles.avatarPicker} onPress={pickAvatar}>
-            {avatar ? (
-              <Image source={{ uri: avatar }} style={styles.avatar} />
-            ) : (
-              <Text style={{ color: 'black',fontWeight:'bold' }}>Tap to choose or take a photo</Text>
-            )}
+            {avatar ? <Image source={{ uri: avatar }} style={styles.avatar} /> :
+              <Text style={{ color: '#333', fontWeight: 'bold' }}>Tap to choose or take a photo</Text>}
           </TouchableOpacity>
 
-          {renderField('Password', <Ionicons name="lock-closed-outline" size={20} color="gray" />, 'password', '••••••••', true)}
-          {renderField('Confirm Password', <Ionicons name="lock-closed" size={20} color="gray" />, 'confirmPassword', '••••••••', true)}
+          {renderField('Password', <Ionicons name="lock-closed-outline" size={20} color="#666" />, 'password', '••••••••', true)}
+          {renderField('Confirm Password', <Ionicons name="lock-closed" size={20} color="#666" />, 'confirmPassword', '••••••••', true)}
 
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Register</Text>
+          <TouchableOpacity style={styles.registerButton}>
+            <LinearGradient
+              colors={['#2E7D32', '#60AD5E']}
+              start={[0, 0]}
+              end={[1, 1]}
+              style={styles.gradientButton}
+            >
+              <Text style={styles.registerButtonText}>Register</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -161,48 +137,57 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     justifyContent: 'center',
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#F6F8FA',
     padding: 20,
   },
   title: {
     fontSize: 30,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#2e7d32',
+    color: '#2E7D32',
     marginBottom: 30,
   },
   card: {
     backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 16,
-    elevation: 4,
+    borderRadius: 20,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 5,
   },
   label: {
-    marginBottom: 5,
+    marginBottom: 6,
     fontWeight: '500',
+    color: '#444',
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#E0E0E0',
     borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    marginBottom: 15,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 16,
+    backgroundColor: '#FAFAFA',
   },
   input: {
     flex: 1,
     marginLeft: 10,
+    fontSize: 16,
+    color: '#333',
   },
   pickerWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#E0E0E0',
     borderRadius: 12,
-    paddingHorizontal: 10,
-    marginBottom: 15,
+    paddingHorizontal: 12,
+    marginBottom: 16,
+    backgroundColor: '#FAFAFA',
   },
   picker: {
     flex: 1,
@@ -210,32 +195,29 @@ const styles = StyleSheet.create({
   },
   avatarPicker: {
     height: 120,
-    borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: 12,
     marginBottom: 20,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
-    backgroundColor:'wheat',
-    color:'white',
-    fontWeight:'bold'
+    backgroundColor: '#E0F2F1',
   },
   avatar: {
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
   },
-  button: {
-    backgroundColor: '#2e7d32',
-    padding: 14,
-    borderRadius: 12,
-    alignItems: 'center',
+  registerButton: {
     marginTop: 10,
   },
-  buttonText: {
-    color: 'white',
-    fontWeight: '600',
+  gradientButton: {
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  registerButtonText: {
+    color: '#fff',
+    fontWeight: '700',
     fontSize: 16,
   },
 });
