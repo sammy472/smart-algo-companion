@@ -67,7 +67,7 @@ const ProfileSettingsScreen = () => {
                 <View style={styles.avatarContainer}>
                     <TouchableOpacity onPress={pickImage} style={styles.editAvatarButton}>
                         <Image
-                            source={avatar ? { uri: avatar } : require("./default-avatar.webp")}
+                            source={avatar ? { uri: avatar } : require("@/src/features/farmer/assets/default-avatar.jpg")}
                             style={styles.avatar}
                         />
                         <View style={{ position: 'absolute', top: '35%', left: '10%', opacity: 0.95 }}>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import DeviceControlScreen from "@/src/features/farmer/screens/Device Management/DeviceControl";
+import DeviceControlScreen from "@/src/features/farmer/screens/Device Management/DeviceControlScreen";
 
 const ControlDevice = () => {
 

@@ -1,8 +1,22 @@
-import React from 'react';
-import LearningHubLayout from '@/src/features/farmer/layouts/LearningHubLayout';
+import { Stack } from "expo-router";
+
 const Layout = () => {  
     return (
-       <LearningHubLayout />
+        <Stack
+            screenOptions={{
+                headerStyle: {
+                    backgroundColor: "#1D1041",
+                },
+                headerTintColor: "#fff",
+                headerTitleStyle: {
+                    fontWeight: "bold",
+                },
+                headerShown: false,
+            }
+            
+        }
+            
+        />
     );
 }
 

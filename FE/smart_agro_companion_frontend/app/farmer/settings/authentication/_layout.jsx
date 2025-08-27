@@ -1,8 +1,12 @@
-import React from 'react';
-import AuthenticationLayout from '@/src/features/farmer/layouts/AuthenticationLayout';
+import { Stack } from "expo-router";
+
 const Layout = () => {  
     return (
-        <AuthenticationLayout />
+        <Stack
+            initialRouteName="index"
+            screenOptions={{ headerShown: false }}
+        >
+        </Stack>
     );
 }
 
