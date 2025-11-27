@@ -7,6 +7,7 @@ import {
   LineChart,
 } from 'react-native-chart-kit';
 import {AnimatedSwipeRightHint} from '@/src/features/farmer/components/animated-swipe-right-indicator';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -100,6 +101,7 @@ const DashboardHomeScreen = () => {
   ];
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Smart Agro Companion</Text>
       <Text style={styles.subTitle}>Welcome, SAMUEL!</Text>
@@ -185,6 +187,7 @@ const DashboardHomeScreen = () => {
         </CardView>
       ))}
     </ScrollView>
+    </SafeAreaView>
   );
 };
 

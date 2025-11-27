@@ -42,67 +42,68 @@ const AddDeviceScreen = () => {
   };
 
   return (
-    <SafeAreaProvider>
-      <View style={styles.container}>
-        <Text style={styles.title}>Add New Device</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Add New Device</Text>
 
-        <View style={styles.inputGroup}>
-          <Icon name="microchip" size={20} color="#1D1041" style={styles.icon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Device Name"
-            value={deviceName}
-            onChangeText={setDeviceName}
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Icon name="cogs" size={20} color="#1D1041" style={styles.icon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Device Type (e.g., Sensor, Pump)"
-            value={deviceType}
-            onChangeText={setDeviceType}
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Icon name="map-marker" size={20} color="#1D1041" style={styles.icon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Farm Location"
-            value={farmLocation}
-            onChangeText={setFarmLocation}
-          />
-        </View>
-
-        <TouchableOpacity
-          style={styles.inputGroup}
-          onPress={() => setShowDatePicker(true)}
-        >
-          <MCIcon name="calendar" size={20} color="#1D1041" style={styles.icon} />
-          <Text style={[styles.input, { paddingVertical: 10 }]}>
-            {installationDate.toISOString().split("T")[0]}
-          </Text>
-        </TouchableOpacity>
-
-        {showDatePicker && (
-          <DateTimePicker
-            value={installationDate}
-            mode="date"
-            display={Platform.OS === "ios" ? "inline" : "default"}
-            onChange={(event, selectedDate) => {
-              setShowDatePicker(false);
-              if (selectedDate) setInstallationDate(selectedDate);
-            }}
-          />
-        )}
-
-        <TouchableOpacity style={styles.button} onPress={handleAddDevice}>
-          <Text style={styles.buttonText}>Add Device</Text>
-        </TouchableOpacity>
+      <View style={styles.inputGroup}>
+        <Icon name="microchip" size={20} color="#1D1041" style={styles.icon} />
+        <Text>Device Name</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Device Name"
+          value={deviceName}
+          onChangeText={setDeviceName}
+        />
       </View>
-    </SafeAreaProvider>
+
+      <View style={styles.inputGroup}>
+        <Icon name="cogs" size={20} color="#1D1041" style={styles.icon} />
+        <Text>Device Tyoe</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Device Type (e.g., Sensor, Pump)"
+          value={deviceType}
+          onChangeText={setDeviceType}
+        />
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Icon name="map-marker" size={20} color="#1D1041" style={styles.icon} />
+        <Text>Farm Location</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Farm Location"
+          value={farmLocation}
+          onChangeText={setFarmLocation}
+        />
+      </View>
+
+      <TouchableOpacity
+        style={styles.inputGroup}
+        onPress={() => setShowDatePicker(true)}
+      >
+        <MCIcon name="calendar" size={20} color="#1D1041" style={styles.icon} />
+        <Text style={[styles.input, { paddingVertical: 10 }]}>
+          {installationDate.toISOString().split("T")[0]}
+        </Text>
+      </TouchableOpacity>
+
+      {showDatePicker && (
+        <DateTimePicker
+          value={installationDate}
+          mode="date"
+          display={Platform.OS === "ios" ? "inline" : "default"}
+          onChange={(event, selectedDate) => {
+            setShowDatePicker(false);
+            if (selectedDate) setInstallationDate(selectedDate);
+          }}
+        />
+      )}
+
+      <TouchableOpacity style={styles.button} onPress={handleAddDevice}>
+        <Text style={styles.buttonText}>Add Device</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 

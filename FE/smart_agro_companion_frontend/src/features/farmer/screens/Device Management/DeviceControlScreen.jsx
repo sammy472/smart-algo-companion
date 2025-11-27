@@ -7,7 +7,7 @@ import {
     Alert 
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 const DeviceControlScreen = () => {
@@ -46,7 +46,7 @@ const DeviceControlScreen = () => {
     };
 
     return (
-        <SafeAreaProvider>
+        <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.container}>
                 <Text style={styles.title}>Control Device</Text>
 
@@ -88,7 +88,7 @@ const DeviceControlScreen = () => {
                     </TouchableOpacity>
                 </View>
             </View>
-        </SafeAreaProvider>
+        </SafeAreaView>
     );
 };
 

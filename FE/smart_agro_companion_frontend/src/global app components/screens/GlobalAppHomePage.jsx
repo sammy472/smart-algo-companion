@@ -25,7 +25,7 @@ const GlobalAppHome = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { paddingBottom: insets.bottom }]}>
+    <SafeAreaView style={[styles.container, { paddingBottom: insets.bottom,zIndex: 50 }]}>
       <Stack screenOptions={{ headerShown: false }} />
       <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
 

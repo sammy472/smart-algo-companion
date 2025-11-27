@@ -8,11 +8,13 @@ import {
 import { useRouter, Stack } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AnimatedSwipeRightHint } from "@/src/features/farmer/components/animated-swipe-right-indicator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const AuthenticationScreen = () => {
     const router = useRouter();
 
     return (
+        <SafeAreaView style={{ flex: 1 }}>
         <View style={
             { 
                 flex: 1, 
@@ -67,6 +69,7 @@ const AuthenticationScreen = () => {
                 </Text>
             </View>
         </View>
+        </SafeAreaView>
     );
 };
 

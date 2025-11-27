@@ -14,6 +14,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { AnimatedSwipeRightHint } from "@/src/features/farmer/components/animated-swipe-right-indicator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ProfileSettingsScreen = () => {
     const [profile, setProfile] = useState({
@@ -58,6 +59,7 @@ const ProfileSettingsScreen = () => {
     };
 
     return (
+        <SafeAreaView style={{ flex: 1}}>
         <ScrollView showsVerticalScrollIndicator={false}>
             <View style={styles.container}>
                 <AnimatedSwipeRightHint />
@@ -153,6 +155,7 @@ const ProfileSettingsScreen = () => {
                 </Modal>
             </View>
         </ScrollView>
+        </SafeAreaView>
     );
 };
 

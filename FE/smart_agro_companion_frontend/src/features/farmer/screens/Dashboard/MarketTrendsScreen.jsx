@@ -1,10 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaProvider } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const MarketTrendsScreen = () => {
     return (
-        <SafeAreaProvider style={styles.container}>
+        <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.container}>
             <View style={styles.iconContainer}>
                 <MaterialCommunityIcons name="chart-line" size={64} color="#4F8EF7" />
             </View>
@@ -15,7 +17,8 @@ const MarketTrendsScreen = () => {
             <Text style={styles.description}>
                 Stay tuned for real-time market insights and trends tailored for you.
             </Text>
-        </SafeAreaProvider>
+        </View>
+        </SafeAreaView>
     );
 };
 

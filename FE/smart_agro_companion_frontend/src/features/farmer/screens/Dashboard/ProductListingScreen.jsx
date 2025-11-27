@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { FontAwesome, MaterialIcons, Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const initialProducts = [
@@ -99,6 +100,7 @@ const ProductListingScreen = () => {
   const categories = ['All', ...fixedCategories];
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <View style={styles.container}>
       <Text style={styles.title}>My Listed Products</Text>
 
@@ -246,6 +248,7 @@ const ProductListingScreen = () => {
         </Modal>
       )}
     </View>
+    </SafeAreaView>
   );
 };
 

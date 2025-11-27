@@ -10,12 +10,14 @@ import {
     Alert 
 } from "react-native";
 import { Stack } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 
 const ResetPasswordScreen = () => {
     const [email, setEmail] = useState("");
 
     return (
-        <>
+        <SafeAreaView>
             <Stack.Screen
                 options={{
                     title: "Reset Password",
@@ -61,7 +63,7 @@ const ResetPasswordScreen = () => {
                     <Text style={styles.buttonText}>Send Reset Link</Text>
                 </TouchableOpacity>
             </View>
-        </>
+        </SafeAreaView>
     );
 };
 

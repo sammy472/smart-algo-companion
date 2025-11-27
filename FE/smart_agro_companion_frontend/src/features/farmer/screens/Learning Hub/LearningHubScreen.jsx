@@ -4,7 +4,7 @@ import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@expo/vector-icons";
 import { VideoView, useVideoPlayer } from "expo-video";
 import { useEvent } from "expo";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const sampleVideos = [
     { 
@@ -95,7 +95,7 @@ const LearningHubScreen = () => {
             : sampleVideos.filter((video) => video.topic === selectedTopic);
 
     return (
-        <SafeAreaProvider>
+        <SafeAreaView style={{ flex: 1}}>
             <View style={styles.container}>
                 <Text style={styles.title}>Smart Algo Companion</Text>
                 <Text style={styles.subtitle}>Explore AI & IoT Solutions in Agriculture</Text>
@@ -122,7 +122,7 @@ const LearningHubScreen = () => {
                     showsVerticalScrollIndicator={false}
                 />
             </View>
-        </SafeAreaProvider>
+        </SafeAreaView>
     );
 };
 

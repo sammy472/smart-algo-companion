@@ -1,10 +1,10 @@
 import React from 'react';
-import AddDeviceScreen from '@/src/features/farmer/screens/Device Management/AddDeviceScreen';
+import AddProductScreen from '@/src/features/farmer/screens/Dashboard/AddProductScreen';
 
 const AddProduct = () => {
   
   return (
-    <AddDeviceScreen />
+    <AddProductScreen />
   );
 };
 export default AddProduct;

@@ -13,13 +13,22 @@ import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/src/hooks/useApp';
 import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+//import sample images from local assets if needed
+import corn from '../../../farmer/assets/corn.jpg';
+import tomato from '../../../farmer/assets/tomato.jpg';
+import apple from '../../../farmer/assets/apple.jpg';
+import pepper from '../../../farmer/assets/pepper.jpeg';
+import strawberry from '../../../farmer/assets/strawberry.jpeg';
+
 
 const sampleProducts = [
-    { id: '1', name: 'Organic Tomatoes', price: '$10/kg', image: 'https://via.placeholder.com/100', rating: 4.5 },
-    { id: '2', name: 'Fresh Corn', price: '$5/dozen', image: 'https://via.placeholder.com/100', rating: 4.8 },
-    { id: '3', name: 'Organic Apples', price: '$8/kg', image: 'https://via.placeholder.com/100', rating: 4.2 },
-    { id: '4', name: 'Green Peppers', price: '$6/kg', image: 'https://via.placeholder.com/100', rating: 4.6 },
-    { id: '5', name: 'Organic Strawberries', price: '$12/kg', image: 'https://via.placeholder.com/100', rating: 4.4 },
+    { id: '1', name: 'Organic Tomatoes', price: '$10/kg', image: tomato, rating: 4.5 },
+    { id: '2', name: 'Fresh Corn', price: '$5/dozen', image: corn, rating: 4.8 },
+    { id: '3', name: 'Organic Apples', price: '$8/kg', image: apple, rating: 4.2 },
+    { id: '4', name: 'Green Peppers', price: '$6/kg', image: pepper, rating: 4.6 },
+    { id: '5', name: 'Organic Strawberries', price: '$12/kg', image: strawberry, rating: 4.4 },
 ];
 
 const analyticsData = [
@@ -38,6 +47,7 @@ const FarmerHomeScreen = () => {
     const handleDeleteProduct = (id) => setProducts(products.filter(p => p.id !== id));
 
     return (
+        <SafeAreaView style={{ flex: 1}}>
         <View style={styles.container}>
             <StatusBar style="light" />
 
@@ -70,7 +80,7 @@ const FarmerHomeScreen = () => {
                     showsHorizontalScrollIndicator={false}
                     renderItem={({ item }) => (
                         <View style={styles.productCard}>
-                            <Image source={{ uri: item.image }} style={styles.productImage} />
+                            <Image source={item.image} style={styles.productImage} />
                             <Text style={styles.productName}>{item.name}</Text>
                             <Text style={styles.productPrice}>{item.price}</Text>
                             <View style={styles.productActions}>
@@ -110,6 +120,7 @@ const FarmerHomeScreen = () => {
 
             </ScrollView>
         </View>
+        </SafeAreaView>
     );
 };
 

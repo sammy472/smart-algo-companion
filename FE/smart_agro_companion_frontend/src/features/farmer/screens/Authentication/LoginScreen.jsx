@@ -8,6 +8,7 @@ import {
     Alert 
 } from "react-native";
 import { useRouter, Stack } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const LoginScreen = () => {
     const router = useRouter();
@@ -15,7 +16,7 @@ const LoginScreen = () => {
     const [password, setPassword] = useState("");
 
     return (
-        <>
+        <SafeAreaView>
             <Stack.Screen 
                 options={{
                     headerShown: true,
@@ -65,7 +66,7 @@ const LoginScreen = () => {
                     Forgot Password?
                 </Text>
             </View>
-        </>
+        </SafeAreaView>
     );
 };
 

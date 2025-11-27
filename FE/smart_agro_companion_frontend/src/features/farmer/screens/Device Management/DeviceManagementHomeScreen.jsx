@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { 
     View, 
     Text, 
@@ -36,7 +36,7 @@ const DeviceCard = ({ name, icon, status, id }) => {
 */
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaView>
         <View style={styles.card}>
             {/* Header with Icon and Title */}
             <View style={styles.header}>
@@ -57,7 +57,7 @@ const DeviceCard = ({ name, icon, status, id }) => {
             </TouchableOpacity>
             </View>
             <View style={styles.footer}>
-            <Link href={`farmer/app/iot-device-management/${id}`}>
+            <Link href={`farmer/iot-device-management/${id}`}>
                 <Text style={styles.moreText}>More &gt;&gt;&gt;</Text>
             </Link>
             <Switch
@@ -66,7 +66,7 @@ const DeviceCard = ({ name, icon, status, id }) => {
             />
             </View>
         </View>
-    </SafeAreaProvider>
+    </SafeAreaView>
   );
 };
 

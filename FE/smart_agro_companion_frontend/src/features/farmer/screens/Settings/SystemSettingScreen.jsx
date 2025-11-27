@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Switch, TouchableOpacity, StyleSheet, Modal, Pressable } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { AnimatedSwipeRightHint } from '@/src/features/farmer/components/animated-swipe-right-indicator';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Translations configuration
 const translations = {
@@ -241,6 +242,7 @@ const SystemSettingScreen = () => {
   );
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <ScrollView style={styles.container}>
       <AnimatedSwipeRightHint />
       <Text style={styles.headerTitle}>{t.title}</Text>
@@ -399,6 +401,7 @@ const SystemSettingScreen = () => {
         />
       </SettingsSection>
     </ScrollView>
+    </SafeAreaView>
   );
 };
 

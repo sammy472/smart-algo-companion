@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet,ScrollView } from "react-native";
 import { useRouter,Stack } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const SignUpScreen = () => {
     const router = useRouter();
@@ -18,7 +19,7 @@ const SignUpScreen = () => {
     const [gender, setGender] = useState(""); // Male or Female
 
     return (
-        <>
+        <SafeAreaView style={{ flex: 1 }}>
             <Stack.Screen 
                 options={{
                     headerShown: true,
@@ -129,7 +130,7 @@ const SignUpScreen = () => {
                     </Text>
                 </View>
             </ScrollView>
-        </>
+        </SafeAreaView>
     );
 };
 

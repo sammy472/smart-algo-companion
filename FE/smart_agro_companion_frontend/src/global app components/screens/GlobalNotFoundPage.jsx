@@ -1,16 +1,16 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const GlobalAppNotFound = () => {
     return (
-        <SafeAreaProvider>
+        <SafeAreaView style={{ flex: 1 }}>
             <StatusBar style="dark" />
             <View style={styles.container}>
                 <Text style={styles.text}>404 - Page Not Found</Text>
             </View>
-        </SafeAreaProvider>
+        </SafeAreaView>
     );
 };
 

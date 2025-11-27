@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 import db from '../database/client.js';
 import { farmers, buyers } from '../database/schema.js';
 
-// 👥 Helper to get table based on role
+//Helper to get table based on role
 const getTableByRole = (role) => {
   if (role === 'buyer') return buyers;
   return farmers;

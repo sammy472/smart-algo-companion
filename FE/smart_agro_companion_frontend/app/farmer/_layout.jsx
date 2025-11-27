@@ -15,8 +15,7 @@ import Logo from "@/src/features/farmer/assets/bc2.webp";
 
 const Layout = () => {
     const insets = useSafeAreaInsets();
-    console.log(insets);
-
+    
     return (
         <>
             <StatusBar style='auto'/>
@@ -42,7 +41,7 @@ const Layout = () => {
                             height: 50,
                             borderTopWidth: 0,
                             shadowColor: "transparent",
-                            padding:10
+
                         },
                         tabBarActiveTintColor: "white",
                         tabBarInactiveTintColor: "gray",

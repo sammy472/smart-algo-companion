@@ -3,20 +3,17 @@ import {
   View, 
   Image,
   StyleSheet,
-  Text,
-  Platform,
 } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 //Importing images/logo
-import Logo from "./assets/bc2.webp";
+import Logo from "@/src/features/buyer/assets/bc2.webp";
 
 export default function Layout() {
   return (
-    <SafeAreaProvider>
+    <>
       <StatusBar style="light"/>
       <Tabs
       initialRouteName="index"
@@ -128,7 +125,7 @@ export default function Layout() {
           }}
         />
       </Tabs>
-    </SafeAreaProvider>
+    </>
   );
 }
 

@@ -10,7 +10,7 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useLocalSearchParams,Link } from 'expo-router';
 import Paho from 'paho-mqtt';
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const DeviceScreen = () => {
     const [message, setMessage] = useState(0);
@@ -141,7 +141,7 @@ const DeviceScreen = () => {
   */
 
     return (
-        <SafeAreaProvider>
+        <SafeAreaView style={{ flex: 1}}>
             <ScrollView
                 contentContainerStyle={styles.container} 
                 keyboardShouldPersistTaps="handled"
@@ -217,7 +217,7 @@ const DeviceScreen = () => {
                     </View>
                 </View>
             </ScrollView>
-        </SafeAreaProvider>
+        </SafeAreaView>
     );
 };
 
