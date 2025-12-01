@@ -54,13 +54,13 @@ const FarmerHomeScreen = () => {
             <ScrollView contentContainerStyle={styles.content}>
 
                 {/* Welcome Section */}
-                <LinearGradient colors={['#4c669f', '#3b5998', '#192f6a']} style={styles.welcomeBox}>
+                <View style={styles.welcomeBox}>
                     <View>
                         <Text style={styles.welcomeText}>Hello, {user?.firstName || 'SAMUEL'}!</Text>
                         <Text style={styles.welcomeSub}>Here's your dashboard today</Text>
                     </View>
                     <MaterialIcons name="person" size={36} color="white" />
-                </LinearGradient>
+                </View>
 
                 {/* Analytics Section */}
                 <View style={styles.analyticsContainer}>
@@ -134,7 +134,8 @@ const styles = StyleSheet.create({
         alignItems: 'center', 
         padding: 20, 
         borderRadius: 20, 
-        marginBottom: 20 
+        marginBottom: 20,
+        backgroundColor:"#392867"
     },
     welcomeText: { fontSize: 22, fontWeight: 'bold', color: 'white' },
     welcomeSub: { fontSize: 14, color: 'white', marginTop: 4 },

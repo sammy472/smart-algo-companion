@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,11 +9,16 @@ import {
   TouchableOpacity,
   Modal,
   Platform,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Picker } from '@react-native-picker/picker';
+import { useRouter } from 'expo-router';
+import { useApp } from '@/src/hooks/useApp';
+import api from '@/src/services/api';
 
 const allProducts = [
   { id: '1', name: 'Organic Tomatoes', price: 3.5, location: 'Accra', type: 'Vegetable', image: 'https://picsum.photos/seed/tomatoes/400' },
@@ -33,17 +38,40 @@ const locations = ['All', 'Accra', 'Kumasi', 'Cape Coast', 'Tamale', 'Takoradi']
 const ITEMS_PER_PAGE = 4;
 
 export default function MarketplaceScreen() {
+  const { user, userType, addToCart } = useApp();
+  const router = useRouter();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState('All');
   const [selectedLocation, setSelectedLocation] = useState('All');
   const [maxPrice, setMaxPrice] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [modalItem, setModalItem] = useState(null);
   const [page, setPage] = useState(1);
+  const [orderQuantity, setOrderQuantity] = useState('1');
 
-  const filteredProducts = allProducts.filter((product) => {
-    const typeMatch = selectedType === 'All' || product.type === selectedType;
-    const locationMatch = selectedLocation === 'All' || product.location === selectedLocation;
-    const priceMatch = maxPrice === '' || product.price <= parseFloat(maxPrice);
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  const loadProducts = async () => {
+    setLoading(true);
+    try {
+      const data = await api.getProducts();
+      setProducts(data);
+    } catch (error) {
+      console.error('Failed to load products:', error);
+      Alert.alert('Error', 'Failed to load products');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredProducts = products.filter((product) => {
+    // Type filter: if product has a type field, filter by it; otherwise show when "All" is selected
+    const typeMatch = selectedType === 'All' || !product.type || product.type === selectedType;
+    const locationMatch = selectedLocation === 'All' || product.productLocation === selectedLocation;
+    const priceMatch = maxPrice === '' || parseFloat(product.price) <= parseFloat(maxPrice);
     return typeMatch && locationMatch && priceMatch;
   });
 
@@ -53,6 +81,72 @@ export default function MarketplaceScreen() {
   const handleViewMore = (item) => {
     setModalItem(item);
     setShowModal(true);
+  };
+
+  const handleAddToCart = async (product) => {
+    if (!user || userType !== 'buyer') {
+      Alert.alert('Login Required', 'Please login to add items to cart');
+      router.push('/buyer/authentication/login');
+      return;
+    }
+
+    try {
+      await addToCart(product, user.id);
+      Alert.alert('Success', 'Product added to cart!');
+      setShowModal(false);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to add to cart');
+    }
+  };
+
+  const handleOrder = async (product) => {
+    if (!user || userType !== 'buyer') {
+      Alert.alert('Login Required', 'Please login to place an order');
+      router.push('/buyer/authentication/login');
+      return;
+    }
+
+    Alert.alert(
+      'Place Order',
+      `Place order for ${orderQuantity} kg of ${product.name}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Order',
+          onPress: async () => {
+            try {
+              await api.createOrder({
+                productId: product.id,
+                buyerId: user.id,
+                quantity: parseInt(orderQuantity),
+                price: product.price,
+              });
+              Alert.alert('Success', 'Order placed successfully!');
+              setShowModal(false);
+            } catch (error) {
+              Alert.alert('Error', error.message || 'Failed to place order');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleContactSeller = (product) => {
+    if (!user || userType !== 'buyer') {
+      Alert.alert('Login Required', 'Please login to contact seller');
+      router.push('/buyer/authentication/login');
+      return;
+    }
+
+    router.push({
+      pathname: '/buyer/dashboard/chat',
+      params: {
+        farmerId: product.farmerId,
+        productId: product.id,
+        productName: product.name,
+      },
+    });
   };
 
   return (
@@ -94,32 +188,57 @@ export default function MarketplaceScreen() {
         </View>
 
         {/* Product Grid */}
-        <FlatList
-          data={paginatedProducts}
-          keyExtractor={(item) => item.id}
-          numColumns={2}
-          columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 16 }}
-          contentContainerStyle={{ paddingBottom: 120 }}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <TouchableOpacity activeOpacity={0.8} style={styles.card} onPress={() => handleViewMore(item)}>
-              <Image source={{ uri: item.image }} style={styles.image} />
-              <View style={styles.typeBadge}>
-                <Text style={styles.typeText}>{item.type}</Text>
-              </View>
-              <Text style={styles.productName}>{item.name}</Text>
-              <Text style={styles.price}>${item.price.toFixed(2)} / kg</Text>
-              <View style={styles.cardFooter}>
-                <Text style={styles.location}>
-                  <Ionicons name="location-outline" size={14} color="#777" /> {item.location}
-                </Text>
-                <TouchableOpacity style={styles.addCartBtn}>
-                  <Ionicons name="cart-outline" size={18} color="#fff" />
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#392867" />
+            <Text style={styles.loadingText}>Loading products...</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={paginatedProducts}
+            keyExtractor={(item) => item.id.toString()}
+            numColumns={2}
+            columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 16 }}
+            contentContainerStyle={{ paddingBottom: 120 }}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) => {
+              const imageUri = Array.isArray(item.avatar) 
+                ? item.avatar[0] 
+                : item.avatar || 'https://via.placeholder.com/200';
+              
+              return (
+                <TouchableOpacity activeOpacity={0.8} style={styles.card} onPress={() => handleViewMore(item)}>
+                  <Image source={{ uri: imageUri }} style={styles.image} />
+                  <View style={styles.statusBadge}>
+                    <Text style={styles.statusText}>{item.status || 'in stock'}</Text>
+                  </View>
+                  <Text style={styles.productName} numberOfLines={1}>{item.name}</Text>
+                  <Text style={styles.price}>GHS {parseFloat(item.price || 0).toFixed(2)} / kg</Text>
+                  <View style={styles.cardFooter}>
+                    <Text style={styles.location} numberOfLines={1}>
+                      <Ionicons name="location-outline" size={14} color="#777" /> {item.productLocation || 'N/A'}
+                    </Text>
+                    <TouchableOpacity 
+                      style={styles.addCartBtn}
+                      onPress={(e) => {
+                        e.stopPropagation();
+                        handleAddToCart(item);
+                      }}
+                    >
+                      <Ionicons name="cart-outline" size={18} color="#fff" />
+                    </TouchableOpacity>
+                  </View>
                 </TouchableOpacity>
+              );
+            }}
+            ListEmptyComponent={
+              <View style={styles.emptyContainer}>
+                <Ionicons name="basket-outline" size={64} color="#ccc" />
+                <Text style={styles.emptyText}>No products found</Text>
               </View>
-            </TouchableOpacity>
-          )}
-        />
+            }
+          />
+        )}
 
         {/* Pagination */}
         {totalPages > 1 && (
@@ -148,13 +267,75 @@ export default function MarketplaceScreen() {
             <View style={styles.modalContent}>
               {modalItem && (
                 <>
-                  <Image source={{ uri: modalItem.image }} style={styles.modalImage} />
-                  <Text style={styles.modalName}>{modalItem.name}</Text>
-                  <Text style={styles.modalPrice}>${modalItem.price.toFixed(2)} / kg</Text>
-                  <Text style={styles.modalLocation}>Location: {modalItem.location}</Text>
-                  <TouchableOpacity style={styles.closeBtn} onPress={() => setShowModal(false)}>
-                    <Text style={styles.closeText}>Close</Text>
+                  <TouchableOpacity
+                    style={styles.modalCloseButton}
+                    onPress={() => setShowModal(false)}
+                  >
+                    <Ionicons name="close" size={24} color="#333" />
                   </TouchableOpacity>
+                  
+                  <Image 
+                    source={{ 
+                      uri: Array.isArray(modalItem.avatar) 
+                        ? modalItem.avatar[0] 
+                        : modalItem.avatar || 'https://via.placeholder.com/300'
+                    }} 
+                    style={styles.modalImage} 
+                  />
+                  <Text style={styles.modalName}>{modalItem.name}</Text>
+                  <Text style={styles.modalPrice}>GHS {parseFloat(modalItem.price || 0).toFixed(2)} / kg</Text>
+                  <Text style={styles.modalLocation}>
+                    <Ionicons name="location-outline" size={16} color="#666" /> {modalItem.productLocation || 'N/A'}
+                  </Text>
+                  <Text style={styles.modalQuantity}>
+                    <Ionicons name="cube-outline" size={16} color="#666" /> Available: {modalItem.quantity || 0} kg
+                  </Text>
+                  <Text style={styles.modalDelivery}>
+                    <Ionicons name="truck-outline" size={16} color="#666" /> {modalItem.deliveryOptions || 'Pick up'}
+                  </Text>
+                  <Text style={styles.modalStatus}>
+                    Status: <Text style={{ fontWeight: 'bold' }}>{modalItem.status || 'in stock'}</Text>
+                  </Text>
+
+                  <View style={styles.quantityInput}>
+                    <Text style={styles.quantityLabel}>Quantity (kg):</Text>
+                    <TextInput
+                      style={styles.quantityInputField}
+                      value={orderQuantity}
+                      onChangeText={setOrderQuantity}
+                      keyboardType="numeric"
+                      placeholder="1"
+                    />
+                  </View>
+
+                  <View style={styles.modalActions}>
+                    <TouchableOpacity
+                      style={[styles.modalActionButton, styles.addToCartButton]}
+                      onPress={() => handleAddToCart(modalItem)}
+                    >
+                      <Ionicons name="cart-outline" size={20} color="#fff" />
+                      <Text style={styles.modalActionButtonText}>Add to Cart</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[styles.modalActionButton, styles.orderButton]}
+                      onPress={() => handleOrder(modalItem)}
+                    >
+                      <Ionicons name="checkmark-circle-outline" size={20} color="#fff" />
+                      <Text style={styles.modalActionButtonText}>Order Now</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[styles.modalActionButton, styles.contactButton]}
+                      onPress={() => {
+                        setShowModal(false);
+                        handleContactSeller(modalItem);
+                      }}
+                    >
+                      <Ionicons name="chatbubble-outline" size={20} color="#392867" />
+                      <Text style={[styles.modalActionButtonText, { color: '#392867' }]}>Contact Seller</Text>
+                    </TouchableOpacity>
+                  </View>
                 </>
               )}
             </View>
@@ -332,7 +513,113 @@ const styles = StyleSheet.create({
   },
   modalLocation: { 
     fontSize: 14, 
-    color: '#777' 
+    color: '#777',
+    marginTop: 8,
+  },
+  modalQuantity: {
+    fontSize: 14,
+    color: '#777',
+    marginTop: 4,
+  },
+  modalDelivery: {
+    fontSize: 14,
+    color: '#777',
+    marginTop: 4,
+  },
+  modalStatus: {
+    fontSize: 14,
+    color: '#777',
+    marginTop: 4,
+    marginBottom: 16,
+  },
+  modalCloseButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 10,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderRadius: 20,
+    padding: 8,
+  },
+  quantityInput: {
+    marginVertical: 16,
+  },
+  quantityLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 8,
+  },
+  quantityInputField: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+  },
+  modalActions: {
+    gap: 12,
+    marginTop: 8,
+  },
+  modalActionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    borderRadius: 12,
+    gap: 8,
+  },
+  addToCartButton: {
+    backgroundColor: '#392867',
+  },
+  orderButton: {
+    backgroundColor: '#4CAF50',
+  },
+  contactButton: {
+    backgroundColor: '#f0f0f0',
+    borderWidth: 1,
+    borderColor: '#392867',
+  },
+  modalActionButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 60,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: '#666',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 60,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#999',
+    marginTop: 16,
+  },
+  statusBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  statusText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: '600',
   },
   closeBtn: { 
     marginTop: 20, 

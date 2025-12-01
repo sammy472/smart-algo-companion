@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet,ScrollView } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet,ScrollView, Alert } from "react-native";
 import { useRouter,Stack } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
 import { SafeAreaView } from "react-native-safe-area-context";
+import api from "@/src/services/api";
 
 const SignUpScreen = () => {
     const router = useRouter();
@@ -17,6 +18,65 @@ const SignUpScreen = () => {
     const [country, setCountry] = useState("");
     const [userType, setUserType] = useState(""); // Farmer or Buyer
     const [gender, setGender] = useState(""); // Male or Female
+
+    const [error, setError] = useState({
+        name: "",
+        email: "",
+        confirmEmail: "",
+        password: "",
+        confirmPassword: "",
+        telephone: "",
+        address: "",
+    });
+
+    const validateFormEmail = (email, confirmEmail) => {
+        if (!email || email !== confirmEmail) {
+            setError({ ...error, email: "Email is required and must match" });
+            return false;
+        }
+    
+        return true;
+
+    }
+
+    const validateFormPassword = (password, confirmPassword) => {
+        if (!password || password !== confirmPassword) {
+            setError({ ...error, password: "Password is required and must match" });
+            return false;
+        }
+        return true;
+    }
+
+    const handleSignup = async () => {
+        const userData = {
+            name: name,
+            email: email === confirmEmail ? email : null,
+            password: password === confirmPassword ? password : null,
+            telephone: telephone,
+            address: address,
+            city: city,
+            country: country,
+            userType: userType,
+            gender: gender,
+        };
+
+        if(validateFormEmail(userData.email, userData.confirmEmail)) {
+            Alert.alert("Error", "Please fill in all fields and ensure emails match");
+            return;
+        }
+        if(validateFormPassword(userData.password, userData.confirmPassword)) {
+            Alert.alert("Error", "Please fill in all fields and ensure passwords match");
+            return;
+        }
+        
+        const response = await api.signup(userData);
+        console.log(response);
+        if (response.success) {
+            router.push("/farmer/authentication/login");
+        } else {
+            Alert.alert("Error", response.message);
+        }
+    }
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -44,6 +104,7 @@ const SignUpScreen = () => {
                         placeholder="Full Name" 
                         value={name} 
                         onChangeText={setName} 
+                        placeholderTextColor="#777"
                     />
                     <TextInput 
                         style={styles.input} 
@@ -51,6 +112,7 @@ const SignUpScreen = () => {
                         value={email} 
                         onChangeText={setEmail} 
                         keyboardType="email-address" 
+                        placeholderTextColor="#777"
                     />
                     <TextInput 
                         style={styles.input} 
@@ -58,6 +120,7 @@ const SignUpScreen = () => {
                         value={confirmEmail} 
                         onChangeText={setConfirmEmail} 
                         keyboardType="email-address" 
+                        placeholderTextColor="#777"
                     />
                     <TextInput 
                         style={styles.input} 
@@ -65,24 +128,28 @@ const SignUpScreen = () => {
                         value={telephone} 
                         onChangeText={setTelephone} 
                         keyboardType="phone-pad" 
+                        placeholderTextColor="#777"
                     />
                     <TextInput 
                         style={styles.input} 
                         placeholder="Address" 
                         value={address} 
                         onChangeText={setAddress} 
+                        placeholderTextColor="#777"
                     />
                     <TextInput 
                         style={styles.input} 
                         placeholder="City" 
                         value={city} 
                         onChangeText={setCity} 
+                        placeholderTextColor="#777"
                     />
                     <TextInput 
                         style={styles.input} 
                         placeholder="Country" 
                         value={country} 
                         onChangeText={setCountry} 
+                        placeholderTextColor="#777"
                     />
                     <TextInput 
                         style={styles.input} 
@@ -90,6 +157,7 @@ const SignUpScreen = () => {
                         value={password} 
                         onChangeText={setPassword} 
                         secureTextEntry 
+                        placeholderTextColor="#777"
                     />
                     <TextInput 
                         style={styles.input} 
@@ -97,6 +165,7 @@ const SignUpScreen = () => {
                         value={confirmPassword} 
                         onChangeText={setConfirmPassword} 
                         secureTextEntry 
+                        placeholderTextColor="#777"
                     />
 
                     {/* User Type Picker */}
@@ -120,12 +189,12 @@ const SignUpScreen = () => {
                     </View>
 
                     {/* Sign Up Button */}
-                    <TouchableOpacity style={styles.button} onPress={() => alert("Signing up...")}>
+                    <TouchableOpacity style={styles.button} onPress={() => handleSignup()}>
                         <Text style={styles.buttonText}>Sign Up</Text>
                     </TouchableOpacity>
 
                     {/* Already have an account? */}
-                    <Text onPress={() => router.push("/farmer/app/settings/authentication/login")} style={styles.link}>
+                    <Text onPress={() => router.push("/farmer/settings/authentication/login")} style={styles.link}>
                         Already have an account? Login
                     </Text>
                 </View>
@@ -151,10 +220,11 @@ const styles = StyleSheet.create({
     input: {
         width: "100%",
         padding: 12,
-        borderRadius: 10,
+        borderRadius: 8,
         marginBottom: 12,
         backgroundColor: "#e0e0e0",
         fontSize: 16,
+        color: "#333"
     },
     label: {
         fontSize: 16,

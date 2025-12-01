@@ -63,6 +63,15 @@ const DashboardLayout = () => {
                     }} 
                 />    
                 <Drawer.Screen 
+                    name="add-farms"  
+                    options={{
+                        title: "Add Farm", 
+                        drawerIcon: ({ size, color }) => (
+                            <Ionicons name="add-circle-outline" size={30} color={'white'} />
+                        ),
+                    }} 
+                />    
+                <Drawer.Screen 
                     name="orders"  
                     options={{
                         title: "Orders", 
@@ -79,8 +88,25 @@ const DashboardLayout = () => {
                             <Ionicons name="trending-up-outline" size={30} color={'white'} />
                         ),
                     }} 
+                />
+                <Drawer.Screen 
+                    name="ai-detection"  
+                    options={{
+                        title: "AI Crop Detection", 
+                        drawerIcon: ({ size, color }) => (
+                            <Ionicons name="leaf-outline" size={30} color={'white'} />
+                        ),
+                    }} 
                 />      
-                
+                <Drawer.Screen 
+                    name="notifications"  
+                    options={{
+                        title: "Notifications", 
+                        drawerIcon: ({ size, color }) => (
+                            <Ionicons name="notifications-outline" size={30} color={'white'} />
+                        ),
+                    }} 
+                />
             </Drawer>
         </GestureHandlerRootView>
     );

@@ -1,6 +1,6 @@
 import express from 'express';
 import passport from '../config/passport.js';
-import {login,logout,signup,resetPassword} from '../controllers/authControllers.js';
+import {login, logout, signup, requestPasswordReset, resetPassword} from '../controllers/authControllers.js';
 
 const authRouter = express.Router();
 
@@ -8,9 +8,10 @@ const authRouter = express.Router();
 authRouter.post('/login/farmer', passport.authenticate('local-farmer'), login);
 authRouter.post('/login/buyer', passport.authenticate('local-buyer'), login);
 
-//Signup and reset (already use Farmer table by default)
+//Signup and reset
 authRouter.post('/signup', signup);
-authRouter.post('/reset-password', resetPassword);
+authRouter.post('/request-password-reset', requestPasswordReset); // Request reset link
+authRouter.post('/reset-password', resetPassword); // Reset with token
 authRouter.get('/logout', logout);
 
 /*

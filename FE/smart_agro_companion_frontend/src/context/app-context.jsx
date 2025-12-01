@@ -1,6 +1,7 @@
 // app/context/AppContext.js
 import React, { createContext, useReducer, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '../services/api';
 
 // Initial State
 const initialState = {
@@ -284,43 +285,176 @@ export const AppProvider = ({ children }) => {
   };
 
   // Actions
-  const login = async (email, userType) => {
+  const login = async (email, password, userType) => {
     dispatch({ type: ActionTypes.SET_LOADING, payload: true });
     
     try {
-      // Mock authentication
-      const mockUser = {
-        id: Date.now().toString(),
-        email,
-        name: userType === 'farmer' ? 'John Farmer' : 'Jane Buyer',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150',
-      };
+      const response = await api.login(email, password, userType);
+      const user = response.user;
 
-      await AsyncStorage.setItem('userData', JSON.stringify({ user: mockUser, userType }));
+      await AsyncStorage.setItem('userData', JSON.stringify({ user, userType }));
+      
+      // Load cart from AsyncStorage
+      const cartData = await AsyncStorage.getItem(`cart_${user.id}`);
+      if (cartData) {
+        const cartItems = JSON.parse(cartData);
+        cartItems.forEach(item => {
+          dispatch({ type: ActionTypes.ADD_TO_CART, payload: item });
+        });
+      }
       
       dispatch({
         type: ActionTypes.LOGIN_SUCCESS,
-        payload: { user: mockUser, userType },
+        payload: { user, userType },
       });
 
-      return { success: true, user: mockUser };
+      return { success: true, user };
     } catch (error) {
-      dispatch({ type: ActionTypes.SET_ERROR, payload: 'Login failed' });
-      return { success: false, error: 'Login failed' };
+      dispatch({ type: ActionTypes.SET_ERROR, payload: error.message || 'Login failed' });
+      return { success: false, error: error.message || 'Login failed' };
     }
   };
 
   const logout = async () => {
+    try {
+      await api.logout();
+    } catch (error) {
+      console.error('Logout API error:', error);
+    }
     await AsyncStorage.removeItem('userData');
+    if (state.user) {
+      await AsyncStorage.removeItem(`cart_${state.user.id}`);
+    }
     dispatch({ type: ActionTypes.LOGOUT });
   };
 
-  const addToCart = (product) => {
+  const addToCart = async (product, buyerId) => {
     dispatch({ type: ActionTypes.ADD_TO_CART, payload: product });
+    
+    // Save to AsyncStorage
+    if (buyerId) {
+      try {
+        const cartData = await AsyncStorage.getItem(`cart_${buyerId}`);
+        const cartItems = cartData ? JSON.parse(cartData) : [];
+        const existingIndex = cartItems.findIndex(item => item.id === product.id);
+        
+        if (existingIndex >= 0) {
+          cartItems[existingIndex].quantity += 1;
+        } else {
+          cartItems.push({ ...product, quantity: 1 });
+        }
+        
+        await AsyncStorage.setItem(`cart_${buyerId}`, JSON.stringify(cartItems));
+        
+        // Also save to backend if user is logged in
+        if (state.isAuthenticated && state.userType === 'buyer') {
+          try {
+            await api.addToCart(product.id, buyerId, cartItems.find(item => item.id === product.id)?.quantity || 1);
+          } catch (error) {
+            console.error('Failed to sync cart to backend:', error);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to save cart to AsyncStorage:', error);
+      }
+    }
   };
 
-  const removeFromCart = (productId) => {
+  const removeFromCart = async (productId, buyerId) => {
     dispatch({ type: ActionTypes.REMOVE_FROM_CART, payload: productId });
+    
+    // Remove from AsyncStorage
+    if (buyerId) {
+      try {
+        const cartData = await AsyncStorage.getItem(`cart_${buyerId}`);
+        if (cartData) {
+          const cartItems = JSON.parse(cartData).filter(item => item.id !== productId);
+          await AsyncStorage.setItem(`cart_${buyerId}`, JSON.stringify(cartItems));
+        }
+        
+        // Also remove from backend if user is logged in
+        if (state.isAuthenticated && state.userType === 'buyer') {
+          try {
+            // Find cart item ID from backend
+            const cartItems = await api.getCartItems(buyerId);
+            const cartItem = cartItems.find(item => item.productId === productId);
+            if (cartItem) {
+              await api.removeFromCart(cartItem.cartId);
+            }
+          } catch (error) {
+            console.error('Failed to remove from backend cart:', error);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to remove from AsyncStorage:', error);
+      }
+    }
+  };
+
+  const updateCartQuantity = async (productId, quantity, buyerId) => {
+    if (quantity <= 0) {
+      await removeFromCart(productId, buyerId);
+      return;
+    }
+    
+    // Update in state
+    const cartItem = state.cart.find(item => item.id === productId);
+    if (cartItem) {
+      dispatch({
+        type: ActionTypes.ADD_TO_CART,
+        payload: { ...cartItem, quantity },
+      });
+    }
+    
+    // Update AsyncStorage
+    if (buyerId) {
+      try {
+        const cartData = await AsyncStorage.getItem(`cart_${buyerId}`);
+        if (cartData) {
+          const cartItems = JSON.parse(cartData);
+          const itemIndex = cartItems.findIndex(item => item.id === productId);
+          if (itemIndex >= 0) {
+            cartItems[itemIndex].quantity = quantity;
+            await AsyncStorage.setItem(`cart_${buyerId}`, JSON.stringify(cartItems));
+          }
+        }
+        
+        // Update backend
+        if (state.isAuthenticated && state.userType === 'buyer') {
+          try {
+            const cartItems = await api.getCartItems(buyerId);
+            const cartItem = cartItems.find(item => item.productId === productId);
+            if (cartItem) {
+              await api.updateCartItemQuantity(cartItem.cartId, quantity);
+            }
+          } catch (error) {
+            console.error('Failed to update backend cart:', error);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to update AsyncStorage:', error);
+      }
+    }
+  };
+
+  const clearCart = async (buyerId) => {
+    dispatch({ type: ActionTypes.CLEAR_CART });
+    
+    if (buyerId) {
+      try {
+        await AsyncStorage.removeItem(`cart_${buyerId}`);
+        
+        if (state.isAuthenticated && state.userType === 'buyer') {
+          try {
+            await api.clearCart(buyerId);
+          } catch (error) {
+            console.error('Failed to clear backend cart:', error);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to clear AsyncStorage:', error);
+      }
+    }
   };
 
   const addFarm = (farm) => {
@@ -360,6 +494,8 @@ export const AppProvider = ({ children }) => {
     logout,
     addToCart,
     removeFromCart,
+    updateCartQuantity,
+    clearCart,
     addFarm,
     addProduct,
     addIoTDevice,

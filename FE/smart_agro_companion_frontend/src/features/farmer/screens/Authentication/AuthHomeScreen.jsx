@@ -61,7 +61,7 @@ const AuthenticationScreen = () => {
                     <Text 
                         style={{ color: "#6C5CE7", fontWeight: "bold" }} 
                         onPress={
-                            () => router.push("/farmer/app/settings/authentication/reset-password")
+                            () => router.push("/farmer/settings/authentication/reset-password")
                         }
                     >
                         Reset it here   

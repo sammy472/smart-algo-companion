@@ -78,6 +78,15 @@ const DashboardLayout = () => {
                         ),
                     }} 
                 />
+                <Drawer.Screen 
+                    name="chat"  
+                    options={{
+                        title: "Messages", 
+                        drawerIcon: ({ size, color,focused }) => (
+                            <Ionicons name="notifications-outline" size={30} color={'white'} />
+                        ),
+                    }} 
+                />
             </Drawer>
         </GestureHandlerRootView>
     );

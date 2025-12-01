@@ -122,12 +122,50 @@ export const getBuyers = async (req, res) => {
 //Product Controllers
 export const addProduct = async (req, res) => {
   try {
-    const { name, quantity, price, status, productLocation, avatar, farmerId } = req.body;
-    await req.db.insert(products).values({
-      name, quantity, price, status, productLocation, avatar, farmerId
-    });
-    res.status(201).json({ message: 'Product added' });
+    const { 
+      name, 
+      quantity, 
+      price, 
+      status, 
+      productLocation, 
+      deliveryOptions, // "pick up at secured joint" or "dispatch delivery"
+      avatar, // Array of up to 3 image URLs
+      farmerId 
+    } = req.body;
+
+    // Validate images (max 3)
+    let imageArray = [];
+    if (avatar) {
+      if (Array.isArray(avatar)) {
+        imageArray = avatar.slice(0, 3); // Limit to 3 images
+      } else {
+        imageArray = [avatar].slice(0, 3);
+      }
+    }
+
+    // Validate and convert price to numeric string for Drizzle
+    // Drizzle's numeric type expects a string representation
+    const priceValue = parseFloat(price);
+    if (isNaN(priceValue) || priceValue < 0) {
+      return res.status(400).json({ error: 'Invalid price. Price must be a valid positive number' });
+    }
+    const priceString = priceValue.toFixed(2); // Ensure 2 decimal places
+
+    const result = await req.db.insert(products).values({
+      name,
+      quantity: parseInt(quantity),
+      price: priceString, // Numeric string for Drizzle numeric type
+      status: status || 'in stock',
+      productLocation,
+      deliveryOptions: deliveryOptions || 'pick up at secured joint',
+      avatar: imageArray.length > 0 ? imageArray : null,
+      farmerId: parseInt(farmerId),
+      numberOfOrders: 0,
+    }).returning();
+    
+    res.status(201).json({ message: 'Product added successfully', product: result[0] });
   } catch (err) {
+    console.error('Add product error:', err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -143,9 +181,44 @@ export const deleteProduct = async (req, res) => {
 
 export const modifyProduct = async (req, res) => {
   try {
-    await req.db.update(products).set(req.body).where(eq(products.id, +req.params.id));
-    res.json({ message: 'Product updated' });
+    const { id } = req.params;
+    const updateData = { ...req.body };
+
+    // Handle image array if provided
+    if (updateData.avatar) {
+      if (Array.isArray(updateData.avatar)) {
+        updateData.avatar = updateData.avatar.slice(0, 3); // Limit to 3 images
+      } else {
+        updateData.avatar = [updateData.avatar].slice(0, 3);
+      }
+    }
+
+    // Ensure numeric fields are properly converted
+    if (updateData.quantity !== undefined) updateData.quantity = parseInt(updateData.quantity);
+    
+    // Handle price: validate and format to 2 decimal places (consistent with addProduct)
+    if (updateData.price !== undefined && updateData.price !== null) {
+      const priceValue = parseFloat(updateData.price);
+      if (isNaN(priceValue) || priceValue < 0) {
+        return res.status(400).json({ error: 'Invalid price. Price must be a valid positive number' });
+      }
+      updateData.price = priceValue.toFixed(2); // Ensure 2 decimal places for consistency
+    }
+    
+    if (updateData.farmerId !== undefined) updateData.farmerId = parseInt(updateData.farmerId);
+
+    const result = await req.db.update(products)
+      .set(updateData)
+      .where(eq(products.id, parseInt(id)))
+      .returning();
+    
+    if (result.length === 0) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    
+    res.status(200).json({ message: 'Product updated successfully', product: result[0] });
   } catch (err) {
+    console.error('Modify product error:', err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -165,8 +238,18 @@ export const getProduct = async (req, res) => {
 
 export const getProducts = async (req, res) => {
   try {
-    const allProducts = await req.db.select().from(products);
-    res.json(allProducts);
+    const { farmerId } = req.query;
+    let allProducts;
+    
+    if (farmerId) {
+      allProducts = await req.db.select()
+        .from(products)
+        .where(eq(products.farmerId, parseInt(farmerId)));
+    } else {
+      allProducts = await req.db.select().from(products);
+    }
+    
+    res.status(200).json(allProducts);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -7,21 +7,45 @@ import {
   Alert,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons, FontAwesome, AntDesign, Entypo } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import { useApp } from '@/src/hooks/useApp';
+import api from '@/src/services/api';
 
 export default function LoginScreen() {
   const [userInfo, setUserInfo] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
+  const { login } = useApp();
+  const router = useRouter();
 
   const handleUserInfoChange = (field, value) => {
     setUserInfo(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleLogin = () => {
-    Alert.alert('Login Attempted', `Email: ${userInfo.email}\nPassword: ${userInfo.password}`);
+  const handleLogin = async () => {
+    if (!userInfo.email || !userInfo.password) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await login(userInfo.email, userInfo.password, 'buyer');
+      if (result.success) {
+        router.replace('/buyer/dashboard');
+      } else {
+        Alert.alert('Login Failed', result.error || 'Invalid credentials');
+      }
+    } catch (error) {
+      Alert.alert('Error', error.message || 'Login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSocialLogin = provider =>
@@ -51,7 +75,8 @@ export default function LoginScreen() {
               style={styles.input}
               keyboardType="email-address"
               autoCapitalize="none"
-              onChange={e => handleUserInfoChange('email', e.nativeEvent.text)}
+              value={userInfo.email}
+              onChangeText={text => handleUserInfoChange('email', text)}
             />
           </View>
 
@@ -62,19 +87,35 @@ export default function LoginScreen() {
               placeholder="••••••••"
               style={styles.input}
               secureTextEntry
-              onChange={e => handleUserInfoChange('password', e.nativeEvent.text)}
+              value={userInfo.password}
+              onChangeText={text => handleUserInfoChange('password', text)}
             />
           </View>
 
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <TouchableOpacity 
+            style={styles.loginButton} 
+            onPress={handleLogin}
+            disabled={loading}
+          >
             <LinearGradient
               colors={['#3366CC', '#6699FF']}
               start={[0, 0]}
               end={[1, 1]}
               style={styles.gradientButton}
             >
-              <Text style={styles.loginButtonText}>Sign In</Text>
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.loginButtonText}>Sign In</Text>
+              )}
             </LinearGradient>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.forgotPassword}
+            onPress={() => router.push('/buyer/authentication/reset-password')}
+          >
+            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
         </View>
 
@@ -206,5 +247,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
+  },
+  forgotPassword: {
+    marginTop: 16,
+    alignItems: 'center',
+  },
+  forgotPasswordText: {
+    color: '#3366CC',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

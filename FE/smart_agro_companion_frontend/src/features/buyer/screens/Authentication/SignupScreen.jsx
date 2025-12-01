@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Image,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -21,8 +22,12 @@ import {
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import api from '@/src/services/api';
+import { uploadImageToSupabase, generateImagePath } from '@/src/services/supabase';
 
 export default function SignupScreen() {
+  const router = useRouter();
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -30,13 +35,15 @@ export default function SignupScreen() {
     confirmEmail: '',
     city: '',
     telephone: '',
+    address: '',
+    country: 'Ghana',
     status: 'buyer',
-    gender: '',
     password: '',
     confirmPassword: '',
   });
 
   const [avatar, setAvatar] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
 
@@ -64,6 +71,71 @@ export default function SignupScreen() {
     ]);
   };
 
+  const handleSignup = async () => {
+    // Validation
+    if (!form.firstName || !form.email || !form.password) {
+      Alert.alert('Error', 'Please fill in all required fields');
+      return;
+    }
+
+    if (form.email !== form.confirmEmail) {
+      Alert.alert('Error', 'Emails do not match');
+      return;
+    }
+
+    if (form.password !== form.confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
+    if (form.password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Upload avatar to Supabase if provided
+      let avatarUrl = null;
+      if (avatar) {
+        const avatarPath = generateImagePath('avatars', `buyer-${form.email}`, 'jpg');
+        avatarUrl = await uploadImageToSupabase(avatar, 'avatars', avatarPath);
+      }
+
+      const signupData = {
+        name: form.firstName,
+        email: form.email,
+        password: form.password,
+        phone: form.telephone,
+        address: form.address,
+        location: form.city,
+        city: form.city,
+        country: form.country,
+        role: form.status,
+        avatar: avatarUrl,
+      };
+
+      const response = await api.signup(signupData);
+      
+      if (response.redirectToLogin) {
+        Alert.alert(
+          'Success',
+          `${form.status.charAt(0).toUpperCase() + form.status.slice(1)} registered successfully! Please login.`,
+          [
+            {
+              text: 'OK',
+              onPress: () => router.push('/buyer/authentication/login'),
+            },
+          ]
+        );
+      }
+    } catch (error) {
+      Alert.alert('Error', error.message || 'Signup failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const renderField = (label, icon, key, placeholder, secure = false, keyboard = 'default') => (
     <>
       <Text style={styles.label}>{label}</Text>
@@ -87,12 +159,13 @@ export default function SignupScreen() {
         <Text style={styles.title}>Create Account</Text>
 
         <View style={styles.card}>
-          {renderField('First Name', <FontAwesome5 name="user" size={18} color="#666" />, 'firstName', 'Samuel')}
-          {renderField('Family Name', <FontAwesome5 name="user-tie" size={18} color="#666" />, 'lastName', 'Boateng')}
+          {renderField('Full Name', <FontAwesome5 name="user" size={18} color="#666" />, 'firstName', 'John Doe')}
           {renderField('Email Address', <Ionicons name="mail-outline" size={20} color="#666" />, 'email', 'you@example.com', false, 'email-address')}
           {renderField('Confirm Email', <Ionicons name="mail" size={20} color="#666" />, 'confirmEmail', 'you@example.com', false, 'email-address')}
-          {renderField('City / Location', <Entypo name="location-pin" size={20} color="#666" />, 'city', 'Marrakech')}
-          {renderField('Telephone', <Feather name="phone" size={18} color="#666" />, 'telephone', '+212...', false, 'phone-pad')}
+          {renderField('Address', <Entypo name="location-pin" size={20} color="#666" />, 'address', 'Street Address')}
+          {renderField('City', <Entypo name="location-pin" size={20} color="#666" />, 'city', 'City')}
+          {renderField('Country', <Entypo name="location-pin" size={20} color="#666" />, 'country', 'Country')}
+          {renderField('Telephone', <Feather name="phone" size={18} color="#666" />, 'telephone', '+233...', false, 'phone-pad')}
 
           <Text style={styles.label}>Status</Text>
           <View style={styles.pickerWrapper}>
@@ -107,9 +180,7 @@ export default function SignupScreen() {
             </Picker>
           </View>
 
-          {renderField('Gender', <Ionicons name="transgender-outline" size={20} color="#666" />, 'gender', 'Male / Female / Other')}
-
-          <Text style={styles.label}>Avatar</Text>
+          <Text style={styles.label}>Avatar (Optional)</Text>
           <TouchableOpacity style={styles.avatarPicker} onPress={pickAvatar}>
             {avatar ? <Image source={{ uri: avatar }} style={styles.avatar} /> :
               <Text style={{ color: '#333', fontWeight: 'bold' }}>Tap to choose or take a photo</Text>}
@@ -118,14 +189,22 @@ export default function SignupScreen() {
           {renderField('Password', <Ionicons name="lock-closed-outline" size={20} color="#666" />, 'password', '••••••••', true)}
           {renderField('Confirm Password', <Ionicons name="lock-closed" size={20} color="#666" />, 'confirmPassword', '••••••••', true)}
 
-          <TouchableOpacity style={styles.registerButton}>
+          <TouchableOpacity 
+            style={styles.registerButton}
+            onPress={handleSignup}
+            disabled={loading}
+          >
             <LinearGradient
               colors={['#2E7D32', '#60AD5E']}
               start={[0, 0]}
               end={[1, 1]}
               style={styles.gradientButton}
             >
-              <Text style={styles.registerButtonText}>Register</Text>
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.registerButtonText}>Register</Text>
+              )}
             </LinearGradient>
           </TouchableOpacity>
         </View>

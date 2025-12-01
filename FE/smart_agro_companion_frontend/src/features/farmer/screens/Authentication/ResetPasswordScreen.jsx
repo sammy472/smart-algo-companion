@@ -17,7 +17,7 @@ const ResetPasswordScreen = () => {
     const [email, setEmail] = useState("");
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{ flex: 1 }}>
             <Stack.Screen
                 options={{
                     title: "Reset Password",

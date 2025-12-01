@@ -5,18 +5,43 @@ import {
     TextInput, 
     TouchableOpacity, 
     StyleSheet,
-    Alert 
+    Alert,
+    ActivityIndicator
 } from "react-native";
 import { useRouter, Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useApp } from '@/src/hooks/useApp';
 
 const LoginScreen = () => {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const { login } = useApp();
+
+    const handleLogin = async () => {
+        if (!email || !password) {
+            Alert.alert('Error', 'Please fill in all fields');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const result = await login(email, password, 'farmer');
+            if (result.success) {
+                router.replace('/farmer/dashboard');
+            } else {
+                Alert.alert('Login Failed', result.error || 'Invalid credentials');
+            }
+        } catch (error) {
+            Alert.alert('Error', error.message || 'Login failed. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{ flex: 1 }}>
             <Stack.Screen 
                 options={{
                     headerShown: true,
@@ -55,8 +80,16 @@ const LoginScreen = () => {
                     secureTextEntry
                 />
 
-                <TouchableOpacity style={styles.button} onPress={() => Alert.alert("Logging in...")}>
-                    <Text style={styles.buttonText}>Login</Text>
+                <TouchableOpacity 
+                    style={styles.button} 
+                    onPress={handleLogin}
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <ActivityIndicator color="#FFF" />
+                    ) : (
+                        <Text style={styles.buttonText}>Login</Text>
+                    )}
                 </TouchableOpacity>
 
                 <Text 

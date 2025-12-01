@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,20 +9,30 @@ import {
   ScrollView,
   Image,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as ImagePicker from 'expo-image-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import { useApp } from '@/src/hooks/useApp';
+import api from '@/src/services/api';
+import { uploadMultipleImagesToSupabase, generateImagePath } from '@/src/services/supabase';
 
 const AddProductScreen = () => {
+  const { user } = useApp();
+  const router = useRouter();
+  
   //State variables to hold product details
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [category, setCategory] = useState('');
   const [price, setPrice] = useState('');
-  const [image, setImage] = useState('');
-  const [products, setProducts] = useState([]);
+  const [productLocation, setProductLocation] = useState('');
+  const [deliveryOptions, setDeliveryOptions] = useState('pick up at secured joint');
+  const [status, setStatus] = useState('in stock');
+  const [images, setImages] = useState([]); // Array for up to 3 images
+  const [loading, setLoading] = useState(false);
 
   //Camera and Image Picker permissions hooks
   /*
@@ -39,54 +49,67 @@ const AddProductScreen = () => {
   console.log('Gallery Permission Status:', galleryStatus);
   */
 
-  const categories = ['Vegetables', 'Grains', 'Cereals', 'Fruits', 'Poultry', 'Meat'];
-
   const resetForm = () => {
     setName('');
     setQuantity('');
-    setCategory('');
     setPrice('');
-    setImage('');
+    setProductLocation('');
+    setDeliveryOptions('pick up at secured joint');
+    setStatus('in stock');
+    setImages([]);
   };
 
-  //Picking an image from the gallery
+  //Picking images from the gallery (up to 3)
   const pickImage = async () => {
+    if (images.length >= 3) {
+      Alert.alert('Limit Reached', 'You can only add up to 3 images');
+      return;
+    }
+    
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permissionResult.granted === false) {
       Alert.alert('Permission to access media is required!');
       return;
-    }else{
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images','livePhotos'],
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 1,
-      });
-      if (!result.canceled) {
-        setImage(result.assets[0].uri);
-      }
+    }
+    
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+      allowsMultipleSelection: true,
+    });
+    
+    if (!result.canceled) {
+      const newImages = result.assets.slice(0, 3 - images.length).map(asset => asset.uri);
+      setImages([...images, ...newImages]);
     }
   };
 
   //Taking a photo using the camera
-  //This function will request permission to use the camera and then launch the camera interface
   const takePhoto = async () => {
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-        if (permissionResult.granted === false) {
-      Alert.alert('Permission to access camera roll is required!');
+    if (images.length >= 3) {
+      Alert.alert('Limit Reached', 'You can only add up to 3 images');
       return;
-    }else{
-      let result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ['images','livePhotos'],
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 1,
-      });
-      if (!result.canceled) {
-        setImage(result.assets[0].uri);
-      }
     }
-  }
+    
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    if (permissionResult.granted === false) {
+      Alert.alert('Permission to access camera is required!');
+      return;
+    }
+    
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+    
+    if (!result.canceled) {
+      setImages([...images, result.assets[0].uri]);
+    }
+  };
 
   const pickAvatar = async () => {
     Alert.alert(
@@ -107,24 +130,63 @@ const AddProductScreen = () => {
     );
   };
 
-  const handleAddProduct = () => {
-    if (!name || !quantity || !category || !price || !image) {
-      Alert.alert('Missing Fields', 'Please complete all fields before submitting.');
+  const handleAddProduct = async () => {
+    if (!name || !quantity || !price || !productLocation) {
+      Alert.alert('Missing Fields', 'Please complete all required fields.');
       return;
     }
 
-    const newProduct = {
-      id: Date.now().toString(),
-      name,
-      quantity: parseFloat(quantity),
-      category,
-      price: parseFloat(price),
-      image,
-    };
+    if (images.length === 0) {
+      Alert.alert('Missing Image', 'Please add at least one product image.');
+      return;
+    }
 
-    setProducts([newProduct, ...products]);
-    Alert.alert('Success', 'Product added successfully.');
-    resetForm();
+    if (!user?.id) {
+      Alert.alert('Error', 'Please login to add products');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Upload images to Supabase Storage first
+      const imageUrls = await uploadMultipleImagesToSupabase(
+        images,
+        'products',
+        'products',
+        `product-${user.id}`
+      );
+
+      // Create product with Supabase image URLs
+      await api.createProduct({
+        name,
+        quantity: parseInt(quantity),
+        price: parseFloat(price),
+        productLocation,
+        deliveryOptions,
+        status,
+        avatar: imageUrls, // Array of Supabase image URLs
+        farmerId: user.id,
+      });
+
+      Alert.alert('Success', 'Product added successfully!', [
+        {
+          text: 'OK',
+          onPress: () => {
+            resetForm();
+            router.back();
+          },
+        },
+      ]);
+    } catch (error) {
+      console.error('Add product error:', error);
+      Alert.alert('Error', error.message || 'Failed to add product. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const removeImage = (index) => {
+    setImages(images.filter((_, i) => i !== index));
   };
 
   const renderInputWithIcon = (iconName, placeholder, value, setValue, keyboardType = 'default') => (
@@ -149,57 +211,73 @@ const AddProductScreen = () => {
       </Text>
       {renderInputWithIcon('food-apple', 'Product Name', name, setName)}
       {renderInputWithIcon('weight-kilogram', 'Quantity (kg)', quantity, setQuantity, 'numeric')}
-      {renderInputWithIcon('currency-usd', 'Price per kilo ($)', price, setPrice, 'numeric')}
+      {renderInputWithIcon('currency-usd', 'Price per kilo (GHS)', price, setPrice, 'numeric')}
+      {renderInputWithIcon('map-marker', 'Product Location', productLocation, setProductLocation)}
 
-      <Text style={[styles.label, { marginBottom: 6 }]}>
-        Category
-      </Text>
+      <Text style={[styles.label, { marginBottom: 6 }]}>Delivery Type</Text>
       <View style={[styles.pickerWrapper]}>
-        <Icon name="format-list-bulleted" size={22} color="#1D1041" style={{ marginRight: 8 }} />
+        <Icon name="truck-delivery" size={22} color="#1D1041" style={{ marginRight: 8 }} />
         <Picker
-          selectedValue={category}
-          onValueChange={(value) => setCategory(value)}
+          selectedValue={deliveryOptions}
+          onValueChange={(value) => setDeliveryOptions(value)}
           style={Platform.OS === 'android' ? styles.pickerAndroid : styles.pickerIOS}
         >
-          <Picker.Item label="Select Category" value="" />
-          {categories.map((cat) => (
-            <Picker.Item key={cat} label={cat} value={cat} />
-          ))}
+          <Picker.Item label="Pick up at secured joint" value="pick up at secured joint" />
+          <Picker.Item label="Dispatch delivery" value="dispatch delivery" />
         </Picker>
       </View>
 
+      <Text style={[styles.label, { marginBottom: 6 }]}>Status</Text>
+      <View style={[styles.pickerWrapper]}>
+        <Icon name="check-circle" size={22} color="#1D1041" style={{ marginRight: 8 }} />
+        <Picker
+          selectedValue={status}
+          onValueChange={(value) => setStatus(value)}
+          style={Platform.OS === 'android' ? styles.pickerAndroid : styles.pickerIOS}
+        >
+          <Picker.Item label="In Stock" value="in stock" />
+          <Picker.Item label="Out of Stock" value="out of stock" />
+        </Picker>
+      </View>
+
+      <Text style={[styles.label, { marginBottom: 6 }]}>Product Images (Max 3)</Text>
       <TouchableOpacity style={styles.buttonCamera} onPress={pickAvatar}>
         <Icon name="image" size={24} color="white" style={{ marginRight: 8 }} />
         <Text style={styles.buttonText}>
-          Tap to choose or take a photo
+          {images.length > 0 ? `Add More (${images.length}/3)` : 'Tap to choose or take photos'}
         </Text>
       </TouchableOpacity>
 
-      {image ? (
-        <Image
-          source={{ uri: image }}
-          style={styles.imagePreview}
-          resizeMode="cover"
-        />
-      ) : null}
-
-      <TouchableOpacity style={styles.button} onPress={handleAddProduct}>
-        <Icon name="plus-circle" size={24} color="#FFF" style={{ marginRight: 8 }} />
-        <Text style={styles.buttonText}>Add Product</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.subTitle}>Product List</Text>
-      {products.map((product) => (
-        <View key={product.id} style={styles.productCard}>
-          <Image source={{ uri: product.image }} style={styles.productImage} />
-          <View style={styles.productDetails}>
-            <Text style={styles.productName}>{product.name}</Text>
-            <Text>Quantity: {product.quantity}kg</Text>
-            <Text>Category: {product.category}</Text>
-            <Text>Price: ${product.price}/kg</Text>
-          </View>
+      {images.length > 0 && (
+        <View style={styles.imagesContainer}>
+          {images.map((img, index) => (
+            <View key={index} style={styles.imageWrapper}>
+              <Image source={{ uri: img }} style={styles.imagePreview} resizeMode="cover" />
+              <TouchableOpacity
+                style={styles.removeImageButton}
+                onPress={() => removeImage(index)}
+              >
+                <Icon name="close-circle" size={24} color="#F44336" />
+              </TouchableOpacity>
+            </View>
+          ))}
         </View>
-      ))}
+      )}
+
+      <TouchableOpacity
+        style={[styles.button, loading && styles.buttonDisabled]}
+        onPress={handleAddProduct}
+        disabled={loading}
+      >
+        {loading ? (
+          <ActivityIndicator color="#FFF" />
+        ) : (
+          <>
+            <Icon name="plus-circle" size={24} color="#FFF" style={{ marginRight: 8 }} />
+            <Text style={styles.buttonText}>Add Product</Text>
+          </>
+        )}
+      </TouchableOpacity>
     </ScrollView>
     </SafeAreaView>
   );
@@ -267,13 +345,33 @@ const styles = StyleSheet.create({
     height: 200,
     width: '100%',
   },
+  imagesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginBottom: 20,
+  },
+  imageWrapper: {
+    position: 'relative',
+    width: '30%',
+    aspectRatio: 1,
+  },
   imagePreview: {
     width: '100%',
-    height: 250,
+    height: '100%',
     borderRadius: 8,
-    marginBottom: 20,
     borderColor: '#CCC',
     borderWidth: 1,
+  },
+  removeImageButton: {
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
   },
   button: {
     flexDirection: 'row',
