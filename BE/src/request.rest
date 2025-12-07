@@ -1,0 +1,14 @@
+POST http://localhost:3000/api/auth/signup
+Content-Type: application/json
+
+{
+      "name": "Samuel Boateng",
+      "email": "samuelboateng472@gmail.com",
+      "password": "Newtpnian472@$",
+      "phone": "0207474076",
+      "address": "Botiannor",
+      "location": "Botiannor",
+      "city": "Accra",
+      "userType": "Farmer",
+      "country": "Ghana"
+}
